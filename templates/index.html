@@ -4,37 +4,101 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PANDA_SENTINEL | BLADE_RUNNER_2049</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700;900&display=swap" rel="stylesheet">
+    
     <style>
-        :root { --br-teal: #04d9ff; --br-green: #39ff14; --br-red: #ff003c; --br-magenta: #b800ff; --br-orange: #ff5e00; }
-        body { background: url('/static/background.jpg') no-repeat center center fixed; background-size: cover; color: #fff; font-family: 'Rajdhani', sans-serif; overflow-x: hidden; }
-        body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: -1; }
+        :root {
+            --br-teal: #04d9ff; --br-orange: #ff5e00; --br-magenta: #b800ff; 
+            --br-green: #39ff14; --br-red: #ff003c;     
+        }
+        
+        body { 
+            background: url('/static/background.jpg') no-repeat center center fixed; background-size: cover;
+            color: #fff; font-family: 'Rajdhani', sans-serif; overflow-x: hidden; 
+        }
+
+        body::before {
+            content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.5); z-index: -1;
+        }
+
+        /* Эффект дождя */
+        .rain {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;
+            background-image: repeating-linear-gradient(-15deg, transparent, transparent 20px, rgba(4, 217, 255, 0.08) 20px, rgba(4, 217, 255, 0.08) 22px);
+            background-size: 40px 120px; animation: rainDrop 0.5s linear infinite; pointer-events: none;
+        }
+        @keyframes rainDrop { 0% { background-position: 0 0; } 100% { background-position: -40px 120px; } }
+
         .font-cyber { font-family: 'Orbitron', sans-serif; }
-        .cyber-card { background: rgba(5, 7, 10, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(4, 217, 255, 0.2); border-top: 3px solid var(--br-teal); }
-        .lang-btn { background: rgba(0,0,0,0.5); border: 1px solid rgba(4, 217, 255, 0.3); color: #aaa; padding: 4px 12px; border-radius: 4px; font-size: 10px; cursor: pointer; transition: 0.3s; }
-        .lang-btn.active { background: rgba(4, 217, 255, 0.2); color: var(--br-teal); border-color: var(--br-teal); }
-        .light { width: 75px; height: 75px; border-radius: 50%; filter: brightness(0.1); border: 4px solid #111; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .light.active { filter: brightness(1.8); box-shadow: 0 0 50px currentColor; border-color: currentColor; }
-        .surge-beam { position: fixed; bottom: -100vh; left: 50%; width: 6px; height: 100vh; background: var(--br-green); box-shadow: 0 0 40px var(--br-green); transform: translateX(-50%); display: none; z-index: 100; }
-        .crash-beam { position: fixed; top: -100vh; left: 50%; width: 10px; height: 100vh; background: var(--br-red); box-shadow: 0 0 50px var(--br-red); transform: translateX(-50%); display: none; z-index: 100; }
-        @keyframes surgeUp { 0% { bottom: -100vh; } 100% { bottom: 100vh; } }
-        @keyframes crashDown { 0% { top: -100vh; } 100% { top: 100vh; } }
-        .shake { animation: shake 0.4s; }
-        @keyframes shake { 0%, 100% { transform: translate(0,0); } 25% { transform: translate(-5px, 5px); } 50% { transform: translate(5px, -5px); } }
-        .hologram-panda { filter: grayscale(100%) sepia(100%) hue-rotate(130deg) drop-shadow(0 0 15px var(--br-teal)); animation: glitch 4s infinite; }
-        @keyframes glitch { 0%, 95% { opacity: 0.8; transform: scale(1); } 97% { opacity: 0.3; transform: scale(1.05) skew(5deg); } }
-        .copy-toast { opacity: 0; transition: 0.3s; position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); z-index: 200; }
+
+        .cyber-card { 
+            background: rgba(5, 7, 10, 0.85); backdrop-filter: blur(12px); 
+            border: 1px solid rgba(4, 217, 255, 0.2); border-top: 3px solid var(--br-teal);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8); 
+        }
+
+        /* Кнопки языков */
+        .lang-btn {
+            background: rgba(0,0,0,0.5); border: 1px solid rgba(4, 217, 255, 0.3);
+            color: #aaa; padding: 4px 12px; border-radius: 4px; font-family: 'Orbitron', sans-serif;
+            font-size: 10px; letter-spacing: 2px; cursor: pointer; transition: 0.3s;
+        }
+        .lang-btn.active {
+            background: rgba(4, 217, 255, 0.2); color: var(--br-teal); border-color: var(--br-teal);
+            box-shadow: 0 0 10px rgba(4, 217, 255, 0.3);
+        }
+
+        /* СВЕТОФОР */
+        .light { 
+            width: 75px; height: 75px; border-radius: 50%; filter: brightness(0.1); 
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: 4px solid #111;
+        }
+        .light.active { 
+            filter: brightness(1.8); border-color: currentColor; 
+            box-shadow: 0 0 30px currentColor, 0 0 70px currentColor, inset 0 0 20px currentColor; 
+        }
+
+        /* ЛАЗЕРНЫЕ ЛУЧИ */
+        .surge-beam { position: fixed; bottom: -100vh; left: 50%; width: 6px; height: 100vh; background: var(--br-green); box-shadow: 0 0 40px var(--br-green), 0 0 80px var(--br-green); transform: translateX(-50%); display: none; z-index: 100; }
+        @keyframes surgeUp { 0% { bottom: -100vh; opacity: 1; } 100% { bottom: 100vh; opacity: 0; } }
+        
+        .crash-beam { position: fixed; top: -100vh; left: 50%; width: 10px; height: 100vh; background: var(--br-red); box-shadow: 0 0 50px var(--br-red), 0 0 100px var(--br-red); transform: translateX(-50%); display: none; z-index: 100; }
+        @keyframes crashDown { 0% { top: -100vh; opacity: 1; } 100% { top: 100vh; opacity: 0; } }
+        
+        @keyframes screenShake { 0% { transform: translate(1px, 1px) rotate(0deg); } 10% { transform: translate(-1px, -2px) rotate(-1deg); } 20% { transform: translate(-3px, 0px) rotate(1deg); } 30% { transform: translate(3px, 2px) rotate(0deg); } 40% { transform: translate(1px, -1px) rotate(1deg); } 50% { transform: translate(-1px, 2px) rotate(-1deg); } 60% { transform: translate(-3px, 1px) rotate(0deg); } 70% { transform: translate(3px, 1px) rotate(-1deg); } 80% { transform: translate(-1px, -1px) rotate(1deg); } 90% { transform: translate(1px, 2px) rotate(0deg); } 100% { transform: translate(1px, -2px) rotate(-1deg); } }
+        .shake { animation: screenShake 0.4s; }
+
+        /* Голографическая Панда */
+        .hologram-panda { 
+            filter: grayscale(100%) sepia(100%) hue-rotate(130deg) drop-shadow(0 0 15px var(--br-teal)); 
+            opacity: 0.8; mix-blend-mode: screen; animation: glitchHolo 4s infinite alternate; 
+        }
+        @keyframes glitchHolo { 
+            0% { opacity: 0.8; transform: scale(1); } 
+            95% { opacity: 0.8; transform: scale(1); } 
+            96% { opacity: 0.3; transform: translateX(2px) skewX(5deg); } 
+            100% { opacity: 0.8; transform: scale(1); } 
+        }
+
+        .copy-toast { opacity: 0; transition: 0.3s; position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); z-index: 200; pointer-events: none; }
         .copy-toast.show { opacity: 1; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-6" id="app-body">
+
+    <div class="rain"></div>
     <div id="surge-beam" class="surge-beam"></div>
     <div id="crash-beam" class="crash-beam"></div>
 
-    <header class="w-full max-w-6xl flex justify-between items-center mb-8 z-10">
-        <h1 class="font-cyber text-4xl font-black text-white" style="text-shadow: 0 0 20px var(--br-teal);">PANDA_<span style="color: var(--br-teal);">SENTINEL</span></h1>
-        <div class="flex gap-2 bg-black/60 p-2 rounded-lg border border-teal-500/30">
+    <header class="w-full max-w-6xl flex flex-col md:flex-row justify-between items-center mb-8 z-10 gap-4">
+        <h1 class="font-cyber text-4xl font-black text-white" style="text-shadow: 0 0 20px var(--br-teal);">
+            PANDA_<span style="color: var(--br-teal);">SENTINEL</span>
+        </h1>
+        
+        <div class="flex gap-2 bg-black/60 p-2 rounded-lg border border-teal-500/30 backdrop-blur-md">
             <button class="lang-btn active" onclick="setLang('uk')">UKR</button>
             <button class="lang-btn" onclick="setLang('ru')">RUS</button>
             <button class="lang-btn" onclick="setLang('en')">ENG</button>
@@ -42,40 +106,47 @@
     </header>
 
     <main class="w-full max-w-6xl grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 z-10">
-        <div class="cyber-card p-4 rounded-xl border-t-yellow-500">
-            <div class="text-[10px] uppercase text-gray-500 font-cyber" data-i18n="gold">Ф'ючерси Золото</div>
+        <div class="cyber-card p-5 rounded-xl border-t-yellow-500">
+            <div class="text-[10px] uppercase text-gray-400 tracking-widest font-cyber" data-i18n="gold">Ф'ючерси Золото</div>
             <div class="text-3xl font-cyber font-bold" style="color: #ffd700;" id="gold-val">---</div>
         </div>
-        <div class="cyber-card p-4 rounded-xl border-t-gray-400">
-            <div class="text-[10px] uppercase text-gray-500 font-cyber" data-i18n="silver">Ф'ючерси Срібло</div>
+        <div class="cyber-card p-5 rounded-xl border-t-gray-400">
+            <div class="text-[10px] uppercase text-gray-400 tracking-widest font-cyber" data-i18n="silver">Ф'ючерси Срібло</div>
             <div class="text-3xl font-cyber font-bold text-gray-200" id="silver-val">---</div>
         </div>
-        <div class="cyber-card p-4 rounded-xl border-t-orange-500">
-            <div class="text-[10px] uppercase text-gray-500 font-cyber" data-i18n="oil">Нафта WTI</div>
+        <div class="cyber-card p-5 rounded-xl border-t-orange-500">
+            <div class="text-[10px] uppercase text-gray-400 tracking-widest font-cyber" data-i18n="oil">Нафта WTI</div>
             <div class="text-3xl font-cyber font-bold" style="color: var(--br-orange);" id="oil-val">---</div>
         </div>
-        <div class="cyber-card p-4 rounded-xl border-t-teal-500">
-            <div class="text-[10px] uppercase text-gray-500 font-cyber" data-i18n="dxy">Індекс USD</div>
+        <div class="cyber-card p-5 rounded-xl border-t-teal-500">
+            <div class="text-[10px] uppercase text-gray-400 tracking-widest font-cyber" data-i18n="dxy">Індекс USD</div>
             <div class="text-3xl font-cyber font-bold" style="color: var(--br-teal);" id="dxy-val">---</div>
         </div>
     </main>
 
-    <div class="w-full max-w-6xl cyber-card rounded-[40px] p-10 flex flex-col items-center z-10">
-        <div class="font-cyber text-7xl md:text-8xl font-black mb-10 text-white" id="btc-val" style="text-shadow: 0 0 40px var(--br-teal);">---</div>
-        <div class="flex gap-12 mb-10 bg-black/80 p-8 rounded-[50px] border border-gray-800 shadow-2xl">
+    <div class="w-full max-w-6xl cyber-card rounded-[40px] p-12 flex flex-col items-center z-10 border-t-purple-600" id="btc-card">
+        <div class="font-cyber text-7xl md:text-8xl font-black mb-12 tracking-tighter text-white" id="btc-val" style="text-shadow: 0 0 40px var(--br-teal);">---</div>
+        
+        <div class="flex gap-12 mb-12 bg-black/80 p-10 rounded-[50px] border border-gray-800 shadow-2xl">
             <div id="light-buy" class="light" style="color: var(--br-green)"></div>
             <div id="light-wait" class="light" style="color: #ffb700"></div>
             <div id="light-sell" class="light" style="color: var(--br-red)"></div>
         </div>
-        <div class="w-full bg-black/70 border border-purple-500/30 p-8 rounded-3xl text-2xl md:text-3xl text-center font-bold text-gray-200 min-h-[110px] flex items-center justify-center transition-all" id="status-text">СИНХРОНІЗАЦІЯ...</div>
+
+        <div class="w-full bg-black/70 border border-purple-500/30 p-8 rounded-3xl text-2xl md:text-3xl text-center font-bold text-gray-200 min-h-[110px] flex items-center justify-center transition-all" id="status-text">
+            СИНХРОНІЗАЦІЯ...
+        </div>
     </div>
 
     <div class="w-full max-w-6xl cyber-card rounded-2xl p-6 mt-6 z-10 flex flex-col md:flex-row items-center gap-8">
         <div class="text-8xl hologram-panda">🐼</div>
-        <div class="text-xl md:text-2xl font-bold italic text-green-400" data-i18n="panda">«Бро, не купуй на вершинах і не продавай на дні ринку. Чекай свій сигнал.» 🧘‍♂️</div>
+        <div class="text-xl md:text-2xl font-bold italic text-green-400" data-i18n="panda">
+            «Бро, не купуй на вершинах і не продавай на дні ринку. Чекай свій сигнал.» 🧘‍♂️
+        </div>
     </div>
 
     <div class="w-full max-w-6xl cyber-card rounded-2xl p-6 mt-6 z-10 text-center relative border-t-magenta-500">
+        <h3 class="text-lg font-cyber text-white mb-4 tracking-widest" data-i18n="donate_title">ПІДТРИМАТИ ПРОЕКТ</h3>
         <div class="flex flex-col md:flex-row justify-center gap-4">
             <div class="bg-black/60 border border-purple-500/30 p-4 rounded-xl cursor-pointer hover:border-teal-400 flex-1 group" onclick="copyCrypto('0x748f510de5c5c1f89f160b6e557b464e18f09d91')">
                 <div class="text-[10px] text-gray-500 font-cyber">BTC (BSC BEP20)</div>
@@ -90,15 +161,34 @@
                 <div class="text-xs text-teal-300 break-all font-mono">TQ36w3mcrETYDqQe7tofrbn4GWtVbcuaUz</div>
             </div>
         </div>
-        <div id="copy-toast" class="copy-toast bg-green-500 text-black px-6 py-1 rounded-full text-sm font-bold shadow-lg">COPIED</div>
+        <div id="copy-toast" class="copy-toast bg-green-500 text-black px-6 py-2 rounded-full text-sm font-bold shadow-lg">COPIED</div>
     </div>
 
     <script>
         const dict = {
-            uk: { gold: "Ф'ючерси Золото", silver: "Ф'ючерси Срібло", oil: "Нафта WTI", dxy: "Індекс USD", panda: "«Бро, не купуй на вершинах і не продавай на дні ринку. Чекай свій сигнал.» 🧘‍♂️", status_SYNC: "СИНХРОНІЗАЦІЯ...", status_BUY: "ГОТУЙСЯ ДО ПОКУПКИ 🟢", status_SELL: "ГОТУЙСЯ ДО ПРОДАЖУ 🔴", status_FLAT: "РИНОК У РІВНОВАЗІ..." },
-            ru: { gold: "Фьючерсы Золото", silver: "Фьючерсы Серебро", oil: "Нефть WTI", dxy: "Индекс USD", panda: "«Бро, не покупай на вершинах и не продавай на дне рынка. Жди свой сигнал.» 🧘‍♂️", status_SYNC: "СИНХРОНИЗАЦИЯ...", status_BUY: "ГОТОВЬСЯ К ПОКУПКЕ 🟢", status_SELL: "ГОТОВЬСЯ К ПРОДАЖЕ 🔴", status_FLAT: "РЫНОК В РАВНОВЕСИИ..." },
-            en: { gold: "Gold Futures", silver: "Silver Futures", oil: "Oil WTI", dxy: "USD Index", panda: "«Bro, don't buy the tops and don't sell the bottoms. Wait for the signal.» 🧘‍♂️", status_SYNC: "SYNCING...", status_BUY: "PREPARE TO BUY 🟢", status_SELL: "PREPARE TO SELL 🔴", status_FLAT: "MARKET IN BALANCE..." }
+            uk: { 
+                gold: "Ф'ючерси Золото", silver: "Ф'ючерси Срібло", oil: "Нафта WTI", dxy: "Індекс USD", 
+                panda: "«Бро, не купуй на вершинах і не продавай на дні ринку. Чекай свій сигнал.» 🧘‍♂️",
+                donate_title: "ПІДТРИМАТИ РОЗРОБКУ АЛГОРИТМУ",
+                status_SYNC: "СИНХРОНІЗАЦІЯ...", status_BUY: "ГОТУЙСЯ ДО ПОКУПКИ 🟢", 
+                status_SELL: "ГОТУЙСЯ ДО ПРОДАЖУ 🔴", status_FLAT: "РИНОК У РІВНОВАЗІ..." 
+            },
+            ru: { 
+                gold: "Фьючерсы Золото", silver: "Фьючерсы Серебро", oil: "Нефть WTI", dxy: "Индекс USD", 
+                panda: "«Бро, не покупай на вершинах и не продавай на дне рынка. Жди свой сигнал.» 🧘‍♂️",
+                donate_title: "ПОДДЕРЖАТЬ РАЗРАБОТКУ АЛГОРИТМА",
+                status_SYNC: "СИНХРОНИЗАЦИЯ...", status_BUY: "ГОТОВЬСЯ К ПОКУПКЕ 🟢", 
+                status_SELL: "ГОТОВЬСЯ К ПРОДАЖЕ 🔴", status_FLAT: "РЫНОК В РАВНОВЕСИИ..." 
+            },
+            en: { 
+                gold: "Gold Futures", silver: "Silver Futures", oil: "Oil WTI", dxy: "USD Index", 
+                panda: "«Bro, don't buy the tops and don't sell the bottoms. Wait for the signal.» 🧘‍♂️",
+                donate_title: "SUPPORT ALGORITHM DEVELOPMENT",
+                status_SYNC: "SYNCING...", status_BUY: "PREPARE TO BUY 🟢", 
+                status_SELL: "PREPARE TO SELL 🔴", status_FLAT: "MARKET IN BALANCE..." 
+            }
         };
+
         let currentLang = 'uk'; let currentStatusCode = "SYNC"; let lastSignal = "";
 
         function setLang(lang) {
@@ -129,10 +219,18 @@
                 document.querySelectorAll('.light').forEach(l => l.classList.remove('active'));
                 if (data.signal === 'BUY') {
                     document.getElementById('light-buy').classList.add('active');
-                    if(lastSignal !== 'BUY') { const s = document.getElementById('surge-beam'); s.style.display='block'; s.style.animation='surgeUp 1.5s forwards'; setTimeout(()=>s.style.display='none', 1500); }
+                    if(lastSignal !== 'BUY') { 
+                        const s = document.getElementById('surge-beam'); s.style.display='block'; 
+                        s.style.animation='surgeUp 1.5s forwards'; setTimeout(()=>s.style.display='none', 1500); 
+                    }
                 } else if (data.signal === 'SELL') {
                     document.getElementById('light-sell').classList.add('active');
-                    if(lastSignal !== 'SELL') { document.getElementById('app-body').classList.add('shake'); const c = document.getElementById('crash-beam'); c.style.display='block'; c.style.animation='crashDown 1s forwards'; setTimeout(()=>{c.style.display='none'; document.getElementById('app-body').classList.remove('shake');}, 1000); }
+                    if(lastSignal !== 'SELL') { 
+                        document.getElementById('app-body').classList.add('shake'); 
+                        const c = document.getElementById('crash-beam'); c.style.display='block'; 
+                        c.style.animation='crashDown 1s forwards'; 
+                        setTimeout(()=>{c.style.display='none'; document.getElementById('app-body').classList.remove('shake');}, 1000); 
+                    }
                 } else { document.getElementById('light-wait').classList.add('active'); }
                 lastSignal = data.signal;
             } catch (e) {}
