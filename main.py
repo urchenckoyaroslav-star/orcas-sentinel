@@ -7,98 +7,155 @@ import random
 
 app = Flask(__name__)
 
+# --- КОНФІГУРАЦІЯ ---
 market_state = {
-    "btc_price": 0, "gold_price": 0, "silver_price": 0,
-    "oil_price": 84.15, "dxy_index": 104.48,
-    "signal": "WAIT", "status_code": "SYNC"
+    "btc_price": 0,
+    "gold_price": 0,
+    "silver_price": 0,
+    "oil_price": 84.15,
+    "dxy_index": 104.48,
+    "signal": "WAIT",
+    "status_code": "SYNC",
+    "funding": 0 # Сховано від клієнта, але доступно для твого API
 }
 
 history_buffer = collections.deque(maxlen=60)
-FUNDING_THRESHOLD = 0.0010
+FUNDING_THRESHOLD = 0.0010 # Твій поріг 0.0010% (0.0030 теж можна, але цей чутливіший)
 
-def fetch_global_data():
-    """Сбор данных с приоритетом на Bitget и Bybit (для обхода блоков Render)"""
+def fetch_exchange_data():
+    """Збір даних з усіх бірж (Binance, Bybit, OKX, MEXC, Gate, Bitget)"""
+    ex_data = []
     headers = {'User-Agent': 'Mozilla/5.0'}
-    btc_price = 0
-    global_funding = 0
-    gold_price = 2350.0
-    silver_price = 28.5
-
-    # 1. Сначала идем на BITGET (самый стабильный для Render)
+    
+    # 1. BINANCE
     try:
-        # BTC Цена и Фандинг
-        bg_res = requests.get("https://api.bitget.com/api/v2/mix/market/ticker?symbol=BTCUSDT", timeout=3).json()
-        if bg_res.get('code') == '00000':
-            data = bg_res['data'][0]
-            btc_price = float(data['lastPr'])
-            
-            # Фандинг Bitget
-            bg_f = requests.get("https://api.bitget.com/api/v2/mix/market/current-funding-rate?symbol=BTCUSDT", timeout=3).json()
-            global_funding = float(bg_f['data'][0]['fundingRate']) * 100
+        b_res = requests.get("https://fapi.binance.com/fapi/v1/premiumIndex?symbol=BTCUSDT", timeout=3).json()
+        b_oi_res = requests.get("https://fapi.binance.com/fapi/v1/openInterest?symbol=BTCUSDT", timeout=3).json()
+        ex_data.append({
+            "oi": float(b_oi_res['openInterest']),
+            "fund": float(b_res['lastFundingRate']) * 100,
+            "price": float(b_res['markPrice'])
+        })
     except: pass
 
-    # 2. Если Bitget подвел, пробуем BYBIT
-    if btc_price == 0:
-        try:
-            by_res = requests.get("https://api.bybit.com/v5/market/tickers?category=linear&symbol=BTCUSDT", timeout=3).json()
-            by_data = by_res['result']['list'][0]
-            btc_price = float(by_data['lastPrice'])
-            global_funding = float(by_data['fundingRate']) * 100
-        except: pass
-
-    # 3. МЕТАЛЛЫ (Берем через Bitget PAXG или эмуляцию через золото/доллар)
+    # 2. BYBIT
     try:
-        # Золото (PAXG на Bitget)
-        gold_res = requests.get("https://api.bitget.com/api/v2/spot/market/tickers?symbol=PAXGUSDT", timeout=3).json()
-        if gold_res.get('code') == '00000':
-            gold_price = float(gold_res['data'][0]['lastPr'])
-            silver_price = gold_price / 82.5 # Реальный кросс-курс
+        by_res = requests.get("https://api.bybit.com/v5/market/tickers?category=linear&symbol=BTCUSDT", timeout=3).json()
+        d = by_res['result']['list'][0]
+        ex_data.append({
+            "oi": float(d['openInterest']),
+            "fund": float(d['fundingRate']) * 100,
+            "price": float(d['lastPrice'])
+        })
+    except: pass
+
+    # 3. MEXC (Особливий метод через contract.mexc.com)
+    try:
+        m_res = requests.get("https://contract.mexc.com/api/v1/contract/ticker?symbol=BTC_USDT", timeout=3).json()
+        d = m_res.get('data', {})
+        if d:
+            ex_data.append({
+                "oi": float(d.get('holdVol', 0)) * 0.0001,
+                "fund": float(d.get('fundingRate', 0)) * 100,
+                "price": float(d.get('lastPrice', 0))
+            })
+    except: pass
+
+    # 4. OKX
+    try:
+        o_fund = requests.get("https://www.okx.com/api/v5/public/funding-rate?instId=BTC-USDT-SWAP", timeout=3).json()['data'][0]
+        o_oi = requests.get("https://www.okx.com/api/v5/public/open-interest?instId=BTC-USDT-SWAP", timeout=3).json()['data'][0]
+        ex_data.append({
+            "oi": float(o_oi['oiCcy']),
+            "fund": float(o_fund['fundingRate']) * 100,
+            "price": 0 # Ціну візьмемо з інших
+        })
+    except: pass
+
+    # 5. GATE.IO
+    try:
+        g_res = requests.get("https://api.gateio.ws/api/v4/futures/usdt/tickers?contract=BTC_USDT", timeout=3).json()[0]
+        ex_data.append({
+            "oi": float(g_res['quanto_quanto']),
+            "fund": float(g_res['funding_rate']) * 100,
+            "price": float(g_res['last'])
+        })
+    except: pass
+
+    # 6. BITGET
+    try:
+        bg_ticker = requests.get("https://api.bitget.com/api/v2/mix/market/ticker?symbol=BTCUSDT", timeout=3).json()['data'][0]
+        bg_fund = requests.get("https://api.bitget.com/api/v2/mix/market/current-funding-rate?symbol=BTCUSDT", timeout=3).json()['data'][0]
+        ex_data.append({
+            "oi": float(bg_ticker['openInterest']),
+            "fund": float(bg_fund['fundingRate']) * 100,
+            "price": float(bg_ticker['lastPr'])
+        })
+    except: pass
+
+    return ex_data
+
+def fetch_macro():
+    """Збір Золота та Серебра через PAXG (стабільне джерело)"""
+    try:
+        res = requests.get("https://api.binance.com/api/v3/ticker/price?symbol=PAXGUSDT", timeout=3).json()
+        gold = float(res['price'])
+        return gold, gold / 82.5
     except:
-        # Резервный источник для золота (CoinGecko)
-        try:
-            cg = requests.get("https://api.coingecko.com/api/v3/simple/price?ids=pax-gold&vs_currencies=usd", timeout=3).json()
-            gold_price = float(cg['pax-gold']['usd'])
-            silver_price = gold_price / 82.5
-        except: pass
-
-    print(f"🕵️‍♂️ [PANDA] BTC: {btc_price} | Fund: {global_funding:.4f}% | Gold: {gold_price}")
-
-    return {
-        "price": btc_price, 
-        "funding": global_funding, 
-        "gold": gold_price, 
-        "silver": silver_price,
-        "volume": random.uniform(100, 500)
-    }
+        return 2355.0, 28.6 # Резервні дані при обриві зв'язку
 
 def oracle_brain():
+    """Головний цикл аналізу ринку"""
     while True:
-        data = fetch_global_data()
-        if data and data["price"] > 0:
-            market_state["btc_price"] = data["price"]
-            market_state["gold_price"] = data["gold"]
-            market_state["silver_price"] = data["silver"]
-            market_state["oil_price"] += random.uniform(-0.01, 0.01)
-            market_state["dxy_index"] += random.uniform(-0.005, 0.005)
+        data = fetch_exchange_data()
+        gold, silver = fetch_macro()
+        
+        if data:
+            # Рахуємо середню ціну та глобальний фандинг
+            prices = [ex['price'] for ex in data if ex['price'] > 0]
+            avg_price = sum(prices) / len(prices) if prices else 0
             
-            fund = data["funding"]
-            if fund < -FUNDING_THRESHOLD:
-                market_state["signal"], market_state["status_code"] = "BUY", "BUY"
-            elif fund > FUNDING_THRESHOLD:
-                market_state["signal"], market_state["status_code"] = "SELL", "SELL"
-            else:
-                market_state["signal"], market_state["status_code"] = "WAIT", "FLAT"
+            w_fund_sum = sum(ex['fund'] * ex['oi'] for ex in data if ex['oi'] > 0)
+            total_oi = sum(ex['oi'] for ex in data if ex['oi'] > 0)
+            global_funding = w_fund_sum / total_oi if total_oi > 0 else 0
+            
+            # Оновлюємо стан
+            if avg_price > 0:
+                market_state["btc_price"] = avg_price
+                market_state["gold_price"] = gold
+                market_state["silver_price"] = silver
+                market_state["funding"] = global_funding
+                
+                # Симуляція мікро-руху для макро (для вайбу)
+                market_state["oil_price"] += random.uniform(-0.01, 0.01)
+                market_state["dxy_index"] += random.uniform(-0.005, 0.005)
+                
+                # ЛОГІКА СИГНАЛІВ
+                if global_funding < -FUNDING_THRESHOLD:
+                    market_state["signal"], market_state["status_code"] = "BUY", "BUY"
+                elif global_funding > FUNDING_THRESHOLD:
+                    market_state["signal"], market_state["status_code"] = "SELL", "SELL"
+                else:
+                    market_state["signal"], market_state["status_code"] = "WAIT", "FLAT"
+            
+            # Для адміна в терміналі
+            print(f"🕵️‍♂️ [PANDA] Global Fund: {global_funding:.4f}% | BTC: {avg_price:.0f}$")
+
         else:
             market_state["status_code"] = "SYNC"
-        
-        time.sleep(2)
+            
+        time.sleep(2) # Оновлення кожні 2 секунди
 
 @app.route('/')
-def index(): return render_template('index.html')
+def index():
+    return render_template('index.html')
 
 @app.route('/api/pulse')
-def get_pulse(): return jsonify(market_state)
+def get_pulse():
+    return jsonify(market_state)
 
 if __name__ == '__main__':
+    # Запускаємо "оракула" у фоновому потоці
     threading.Thread(target=oracle_brain, daemon=True).start()
+    # Запуск сервера на порту 5000
     app.run(host='0.0.0.0', port=5000)
