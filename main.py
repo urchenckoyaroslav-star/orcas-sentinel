@@ -1,10 +1,9 @@
 from flask import Flask, render_template, jsonify, request
-import threading
 import time
 
 app = Flask(__name__)
 
-# --- ЦЕНТРАЛЬНЕ СХОВИЩЕ ДАНИХ (PANDA STATE) ---
+# Центральне сховище даних
 market_state = {
     "btc_price": 0,
     "gold_price": 0,
@@ -13,65 +12,53 @@ market_state = {
     "dxy_index": 105.20,
     "signal": "WAIT",
     "status_code": "SYNC",
-    "funding": 0
+    "funding": 0,
+    "last_update": 0  # Мітка часу останнього сигналу
 }
 
-# Поріг фандингу для сигналів (0.0010%)
+# Поріг фандингу
 FUNDING_THRESHOLD = 0.0010
 
 @app.route('/')
 def index():
-    """Головна сторінка терміналу"""
     return render_template('index.html')
 
 @app.route('/api/pulse')
 def get_pulse():
-    """Віддача даних на фронтенд (для JavaScript на сайті)"""
+    # Перевірка на "Живучість" — якщо даних немає 180 секунд, панда засинає
+    if time.time() - market_state["last_update"] > 180 and market_state["last_update"] != 0:
+        market_state["status_code"] = "OFFLINE"
+    
     return jsonify(market_state)
 
 @app.route('/api/update', methods=['POST'])
 def update_data():
-    """
-    СЕКРЕТНИЙ ЕНДПОЇНТ ДЛЯ ВАШОГО ЛЕПТОПА (bridge.py)
-    Приймає реальні ціни та фандинг.
-    """
     data = request.json
     if not data:
-        return {"status": "error", "message": "No data received"}, 400
-
+        return {"status": "error"}, 400
+        
     try:
-        # Оновлюємо котирування з payload
+        # Приймаємо дані з bridge.py
         market_state["btc_price"] = data.get("btc", market_state["btc_price"])
+        market_state["funding"] = data.get("fund", market_state["funding"])
         market_state["gold_price"] = data.get("gold", market_state["gold_price"])
         market_state["silver_price"] = data.get("silver", market_state["silver_price"])
         market_state["oil_price"] = data.get("oil", market_state["oil_price"])
         market_state["dxy_index"] = data.get("dxy", market_state["dxy_index"])
+        market_state["last_update"] = time.time()
         
-        # Отримуємо фандинг для розрахунку сигналу
-        fund = data.get("fund", 0)
-        market_state["funding"] = fund
-        
-        # --- ЛОГІКА СИГНАЛІВ ПАНДИ ---
+        # Розрахунок сигналів
+        fund = market_state["funding"]
         if fund < -FUNDING_THRESHOLD:
-            # Негативний фандинг -> Сигнал на ПОКУПКУ (Лонг-сквіз навпаки)
-            market_state["signal"] = "BUY"
-            market_state["status_code"] = "BUY"
+            market_state["signal"], market_state["status_code"] = "BUY", "BUY"
         elif fund > FUNDING_THRESHOLD:
-            # Високий позитивний фандинг -> Сигнал на ПРОДАЖ (Ризик дампу)
-            market_state["signal"] = "SELL"
-            market_state["status_code"] = "SELL"
+            market_state["signal"], market_state["status_code"] = "SELL", "SELL"
         else:
-            # Фандинг у нормі
-            market_state["signal"] = "WAIT"
-            market_state["status_code"] = "FLAT"
-
-        print(f"📊 [API UPDATE] BTC: {market_state['btc_price']} | Fund: {fund}% | DXY: {market_state['dxy_index']}")
+            market_state["signal"], market_state["status_code"] = "WAIT", "FLAT"
+            
         return {"status": "success"}, 200
-
-    except Exception as e:
-        print(f"❌ Ошибка при обновлении данных: {e}")
-        return {"status": "error", "message": str(e)}, 500
+    except Exception:
+        return {"status": "error"}, 400
 
 if __name__ == '__main__':
-    # На Render сервер має слухати на 0.0.0.0
     app.run(host='0.0.0.0', port=5000)
