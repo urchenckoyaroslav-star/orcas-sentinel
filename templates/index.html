@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐼</text></svg>">
-    
     <title>PANDA_SENTINEL | Premium Crypto Terminal</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
@@ -139,45 +138,25 @@
         </p>
     </div>
 
-    <div class="w-full max-w-6xl mt-6 z-10 mb-10 flex flex-col items-center">
-        <div class="w-full cyber-card rounded-2xl p-8 text-center relative border-t-dark-gold">
-            <h3 class="text-lg font-cyber text-gray-400 mb-6 tracking-widest font-bold" data-i18n="donate_title">ПІДТРИМАТИ СЕРВЕР ТА ЕЛЕКТРИКУ</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
-                <div class="bg-black/80 border border-orange-500/30 p-5 rounded-xl cursor-pointer hover:border-orange-500 transition-all">
-                    <div class="text-xs uppercase text-orange-400 font-cyber font-bold mb-2">₿ BITCOIN</div>
-                    <div class="text-sm text-gray-400 break-all font-mono">0x748f510de5c5c1f89f160b6e557b464e18f09d91</div>
-                </div>
-                <div class="bg-black/80 border border-green-500/30 p-5 rounded-xl cursor-pointer hover:border-green-500 transition-all">
-                    <div class="text-xs uppercase text-green-400 font-cyber font-bold mb-2">💵 USDT (TRC20)</div>
-                    <div class="text-sm text-gray-400 break-all font-mono">TQ36w3mcrETYDqQe7tofrbn4GWtVbcuaUz</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script>
-        // СЛОВНИК (ТІЛЬКИ EN, RU, UK)
         const dict = {
             en: { 
                 gold: "Gold Futures", silver: "Silver Futures", oil: "Oil WTI", dxy: "USD Index", btc_label: "BITCOIN (BINANCE)",
                 off_t: "SYSTEM ASLEEP", off_m: "We are offline due to power or internet outages in our region. We will be back soon!", 
-                donate_title: "SUPPORT SERVER & ELECTRICITY",
                 status_SYNC: "SYNCING...", status_BUY: "PREPARE TO BUY 🟢", status_SELL: "PREPARE TO SELL 🔴", status_FLAT: "MARKET IN BALANCE...",
                 log_buy: "ANOMALOUS VOLUME. SQUEEZE PROBABLE.", log_sell: "ANOMALOUS VOLUME. CORRECTION RISK.", log_wait: "RADAR NORMAL."
             },
             ru: { 
                 gold: "Фьючерсы Золото", silver: "Фьючерсы Серебро", oil: "Нефть WTI", dxy: "Индекс USD", btc_label: "БИТКОИН (BINANCE)",
                 off_t: "СИСТЕМА СПИТ", off_m: "Мы оффлайн из-за отсутствия интернета или электричества в нашем регионе. Скоро вернемся!", 
-                donate_title: "ПОДДЕРЖАТЬ СЕРВЕР И ЭЛЕКТРИЧЕСТВО",
                 status_SYNC: "СИНХРОНИЗАЦИЯ...", status_BUY: "ГОТОВЬСЯ К ПОКУПКЕ 🟢", status_SELL: "ГОТОВЬСЯ К ПРОДАЖЕ 🔴", status_FLAT: "РЫНОК В РАВНОВЕСИИ...",
                 log_buy: "АНОМАЛЬНЫЙ ОБЪЕМ. ВОЗМОЖЕН СКВИЗ.", log_sell: "АНОМАЛЬНЫЙ ОБЪЕМ. РИСК КОРРЕКЦИИ.", log_wait: "РАДАР В НОРМЕ."
             },
             uk: { 
                 gold: "Ф'ючерси Золото", silver: "Ф'ючерси Срібло", oil: "Нафта WTI", dxy: "Індекс USD", btc_label: "БІТКОЇН (BINANCE)",
                 off_t: "СИСТЕМА СПИТЬ", off_m: "Ми спимо через відсутність інтернету або електроенергії в нашому регіоні. Скоро повернемося!", 
-                donate_title: "ПІДТРИМАТИ СЕРВЕР ТА ЕЛЕКТРИКУ",
                 status_SYNC: "СИНХРОНІЗАЦІЯ...", status_BUY: "ГОТУЙСЯ ДО ПОКУПКИ 🟢", status_SELL: "ГОТУЙСЯ ДО ПРОДАЖУ 🔴", status_FLAT: "РИНОК У РІВНОВАЗІ...",
-                log_buy: "АНОМАЛЬНИЙ ОБ'ЄМ. МОЖЛИВИЙ СКВІЗ.", log_sell: "АНОМАЛЬНИЙ ОБ'ЄМ. РИЗИК КОРЕКЦІЇ.", log_wait: "РАДАР У НОРМІ."
+                log_buy: "АНОМАЛЬНИЙ ОБ'ЄМ. МОЖЛИВИЙ СКВІЗ.", log_sell: "АНОМАЛЬНЫЙ ОБ'ЄМ. РИЗИК КОРЕКЦІЇ.", log_wait: "РАДАР У НОРМІ."
             }
         };
 
@@ -212,7 +191,6 @@
             });
         }
 
-        // --- МАГІЯ LIGHTWEIGHT CHARTS ---
         const chartProperties = {
             layout: { background: { type: 'solid', color: 'rgba(10, 10, 15, 1)' }, textColor: '#d1d4dc' },
             grid: { vertLines: { color: 'rgba(255, 215, 0, 0.05)' }, horzLines: { color: 'rgba(255, 215, 0, 0.05)' } },
@@ -229,14 +207,13 @@
                 let chartData = []; let markers = [];
 
                 rawData.forEach(item => {
-                    // Рівновага - Жовтуватий/Сірий колір
                     let colorOptions = { color: 'rgba(255, 215, 0, 0.3)', wickColor: 'rgba(255, 215, 0, 0.3)' }; 
 
                     if (item.signal === 'BUY') {
-                        colorOptions = { color: '#39ff14', wickColor: '#39ff14' }; // Неоновий зелений
+                        colorOptions = { color: '#39ff14', wickColor: '#39ff14' };
                         markers.push({ time: item.time, position: 'belowBar', color: '#39ff14', shape: 'arrowUp', text: 'BUY', size: 2 });
                     } else if (item.signal === 'SELL') {
-                        colorOptions = { color: '#ff003c', wickColor: '#ff003c' }; // Неоновий червоний
+                        colorOptions = { color: '#ff003c', wickColor: '#ff003c' };
                         markers.push({ time: item.time, position: 'aboveBar', color: '#ff003c', shape: 'arrowDown', text: 'SELL', size: 2 });
                     }
 
@@ -248,13 +225,15 @@
                 candleSeries.setData(chartData);
                 candleSeries.setMarkers(markers);
                 cyberChart.timeScale().fitContent();
-            } catch (error) {}
+            } catch (error) {
+                console.error("Chart load failed:", error);
+            }
         }
 
-        // --- ПУЛЬС СИСТЕМИ (Верхні панелі та Світлофор) ---
         async function updatePulse() {
             try {
-                const res = await fetch('/api/pulse'); const data = await res.json();
+                const res = await fetch('/api/pulse'); 
+                const data = await res.json();
                 
                 if (data.status_code === "OFFLINE") {
                     document.getElementById('main-ui').classList.add('hidden');
@@ -274,20 +253,22 @@
                     
                     document.querySelectorAll('.light').forEach(l => l.classList.remove('active'));
                     if (data.signal === 'BUY') {
-                        document.getElementById('light-buy').classList.add('active'); addTerminalLog('log_buy');
+                        document.getElementById('light-buy').classList.add('active'); 
+                        addTerminalLog('log_buy');
                     } else if (data.signal === 'SELL') {
-                        document.getElementById('light-sell').classList.add('active'); addTerminalLog('log_sell');
+                        document.getElementById('light-sell').classList.add('active'); 
+                        addTerminalLog('log_sell');
                     } else {
-                        document.getElementById('light-wait').classList.add('active'); addTerminalLog('log_wait');
+                        document.getElementById('light-wait').classList.add('active'); 
+                        addTerminalLog('log_wait');
                     }
                 }
             } catch (e) {}
         }
 
-        // Ініціалізація
         setLang('en');
-        loadChartData(); // Вантажимо графік 1 раз при старті
-        setInterval(updatePulse, 2000); // Оновлюємо цифри кожні 2 сек
+        loadChartData(); 
+        setInterval(updatePulse, 3000); // Оновлюємо кожні 3 секунди
         
         window.addEventListener('resize', () => { cyberChart.applyOptions({ width: chartContainer.clientWidth, height: chartContainer.clientHeight }); });
     </script>
