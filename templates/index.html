@@ -4,25 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
+    <meta name="google-site-verification" content="NcPCoxIiX6hCaFiE8cBOAQKZ3eZA_0zXFO9a2HX9foU" />
+    
     <title>PANDA_SENTINEL | Premium Crypto Terminal & Scalping Radar</title>
     <meta name="description" content="Професійний термінал для крипто-скальпінгу. Аналіз фандингу, ліквідацій та перекосу стакану (Радар) в реальному часі. Торгуй проти натовпу.">
     <meta name="keywords" content="crypto scalping, btc funding, liquidation heatmap, крипто скальпинг, биткоин ликвидации, фандинг, торговый терминал, радар маркетмейкера, трейдинг бот, BTCUSDT">
     <meta name="author" content="Orcas Sentinel">
     <meta name="robots" content="index, follow">
-    <meta name="language" content="Ukrainian, Russian, English">
     
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://btc-scalping-signals.onrender.com/">
     <meta property="og:title" content="PANDA_SENTINEL | Кібер-Термінал Трейдера">
     <meta property="og:description" content="Живий радар маркетмейкера. Відстежуй аномалії фандингу та об'єми в стакані. Не купуй на вершинах.">
     <meta property="og:image" content="https://btc-scalping-signals.onrender.com/static/background.jpg">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
     
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="PANDA_SENTINEL | Premium Crypto Terminal">
-    <meta name="twitter:description" content="Trade against the crowd. Real-time funding and order book anomaly radar.">
-    <meta name="twitter:image" content="https://btc-scalping-signals.onrender.com/static/background.jpg">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700;900&display=swap" rel="stylesheet">
     
@@ -148,6 +143,7 @@
                 </div>
             </div>
 
+            <div class="text-lg md:text-2xl uppercase text-cyan-400 font-cyber font-bold tracking-widest mb-1 text-neon" data-i18n="btc_label">БІТКОЇН (BTC)</div>
             <div id="btc-val" class="font-cyber text-6xl md:text-8xl font-black mb-8 text-white text-neon">0</div>
             
             <div class="flex gap-12 mb-8 bg-black/90 p-8 rounded-[40px] border border-gray-800 shadow-2xl">
@@ -211,7 +207,7 @@
     <script>
         const dict = {
             uk: { 
-                gold: "Ф'ючерси Золото", silver: "Ф'ючерси Срібло", oil: "Нафта WTI", dxy: "Індекс USD", 
+                gold: "Ф'ючерси Золото", silver: "Ф'ючерси Срібло", oil: "Нафта WTI", dxy: "Індекс USD", btc_label: "БІТКОЇН (BTC)",
                 panda: "«Бро, не купуй на вершинах і не продавай на дні ринку. Будь терплячим.» 🧘‍♂️",
                 off_t: "СИСТЕМА СПИТЬ", off_m: "Ми спимо через відсутність інтернету або електрики. Повернемося, коли з'явиться зв'язок!", 
                 donate_title: "ПІДТРИМАТИ СЕРВЕР ТА ЕЛЕКТРИКУ", bot_link: "КРИПТО БОТ: @TyShoPredictor_bot",
@@ -223,7 +219,7 @@
                 sys_init: "СИСТЕМУ ІНІЦІАЛІЗОВАНО...", sys_wait: "ОЧІКУВАННЯ ДАНИХ З РАДАРУ..."
             },
             ru: { 
-                gold: "Фьючерсы Золото", silver: "Фьючерсы Серебро", oil: "Нефть WTI", dxy: "Индекс USD", 
+                gold: "Фьючерсы Золото", silver: "Фьючерсы Серебро", oil: "Нефть WTI", dxy: "Индекс USD", btc_label: "БИТКОИН (BTC)",
                 panda: "«Бро, не покупай на вершинах и не продавай на дне рынка. Будь терпелив.» 🧘‍♂️",
                 off_t: "СИСТЕМА СПИТ", off_m: "Мы спим из-за отсутствия интернета или электричества. Вернемся, как только появится связь!", 
                 donate_title: "ПОДДЕРЖАТЬ СЕРВЕР И ЭЛЕКТРИЧЕСТВО", bot_link: "КРИПТО БОТ: @TyShoPredictor_bot",
@@ -235,7 +231,7 @@
                 sys_init: "СИСТЕМА ИНИЦИАЛИЗИРОВАНА...", sys_wait: "ОЖИДАНИЕ ДАННЫХ С РАДАРА..."
             },
             en: { 
-                gold: "Gold Futures", silver: "Silver Futures", oil: "Oil WTI", dxy: "USD Index", 
+                gold: "Gold Futures", silver: "Silver Futures", oil: "Oil WTI", dxy: "USD Index", btc_label: "BITCOIN (BTC)",
                 panda: "«Bro, don't buy at the top and don't sell at the bottom. Be patient.» 🧘‍♂️",
                 off_t: "SYSTEM ASLEEP", off_m: "We are sleeping due to no internet or electricity. We'll be back online soon!", 
                 donate_title: "SUPPORT SERVER & ELECTRICITY", bot_link: "CRYPTO BOT: @TyShoPredictor_bot",
