@@ -3,37 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PANDA_SENTINEL | CRYPTO_ORACLE</title>
+    <title>PANDA_SENTINEL | PREMIUM TERMINAL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --br-teal: #04d9ff; --br-green: #39ff14; --br-red: #ff003c; --br-magenta: #b800ff; --br-orange: #ff5e00; }
-        body { background: url('/static/background.jpg') no-repeat center center fixed; background-size: cover; color: #fff; font-family: 'Rajdhani', sans-serif; overflow-x: hidden; }
-        body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: -1; }
-        
+        :root { 
+            --br-gold: #ffd700; 
+            --br-orange: #ff8c00; 
+            --br-dark-gold: #b8860b;
+            --br-green: #39ff14; 
+            --br-red: #ff003c; 
+        }
+        body { 
+            background: #0a0a0c; 
+            background-image: radial-gradient(circle at 50% 0%, #1a1500 0%, #0a0a0c 70%);
+            color: #fff; font-family: 'Rajdhani', sans-serif; overflow-x: hidden; 
+        }
         .font-cyber { font-family: 'Orbitron', sans-serif; }
-        .cyber-card { background: rgba(5, 7, 10, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(4, 217, 255, 0.2); border-top: 3px solid var(--br-teal); }
         
-        .lang-btn { background: rgba(0,0,0,0.5); border: 1px solid rgba(4, 217, 255, 0.3); color: #aaa; padding: 4px 12px; border-radius: 4px; font-size: 10px; cursor: pointer; }
-        .lang-btn.active { background: rgba(4, 217, 255, 0.2); color: var(--br-teal); border-color: var(--br-teal); }
+        .cyber-card { 
+            background: rgba(15, 15, 18, 0.9); 
+            backdrop-filter: blur(12px); 
+            border: 1px solid rgba(255, 215, 0, 0.15); 
+            border-top: 3px solid var(--br-gold); 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.9);
+        }
         
-        .light { width: 70px; height: 70px; border-radius: 50%; filter: brightness(0.1); border: 4px solid #111; transition: 0.3s; }
-        .light.active { filter: brightness(1.8); box-shadow: 0 0 50px currentColor; border-color: currentColor; }
+        .lang-btn { 
+            background: rgba(0,0,0,0.7); border: 1px solid rgba(255, 215, 0, 0.3); 
+            color: #888; padding: 6px 16px; border-radius: 6px; font-size: 12px; 
+            font-weight: bold; cursor: pointer; transition: all 0.3s ease; 
+        }
+        .lang-btn.active { 
+            background: rgba(255, 215, 0, 0.15); color: var(--br-gold); 
+            border-color: var(--br-gold); box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+        }
+        
+        .light { 
+            width: 75px; height: 75px; border-radius: 50%; filter: brightness(0.15); 
+            border: 4px solid #111; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+        .light.active { 
+            filter: brightness(1.8); box-shadow: 0 0 40px currentColor; 
+            border-color: currentColor; 
+        }
 
-        /* Анімація сну */
         .sleeping-panda { font-size: 140px; animation: breathe 4s infinite ease-in-out; }
         @keyframes breathe { 0%, 100% { transform: scale(1); filter: opacity(0.5); } 50% { transform: scale(1.05); filter: opacity(0.9); } }
         
+        .hologram-panda { 
+            filter: drop-shadow(0 0 15px var(--br-gold)); 
+            animation: float 6s infinite ease-in-out; 
+        }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
         .hidden { display: none !important; }
-        .copy-toast { opacity: 0; transition: 0.3s; position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); }
-        .copy-toast.show { opacity: 1; }
+        .copy-toast { opacity: 0; transition: 0.3s; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 999; }
+        .copy-toast.show { opacity: 1; transform: translate(-50%, -20px); }
+        
+        /* Стили для кошельков */
+        .wallet-card {
+            background: rgba(10, 10, 12, 0.8);
+            border: 1px solid rgba(255, 140, 0, 0.3);
+            transition: all 0.3s;
+        }
+        .wallet-card:hover {
+            border-color: var(--br-gold);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-6" id="app-body">
     
     <header class="w-full max-w-6xl flex justify-between items-center mb-8 z-10">
-        <h1 class="font-cyber text-4xl font-black text-white" style="text-shadow: 0 0 20px var(--br-teal);">PANDA_<span style="color: var(--br-teal);">SENTINEL</span></h1>
-        <div class="flex gap-2 bg-black/60 p-2 rounded-lg border border-teal-500/30">
+        <h1 class="font-cyber text-4xl font-black text-white" style="text-shadow: 0 0 20px var(--br-dark-gold);">
+            PANDA_<span style="color: var(--br-gold);">SENTINEL</span>
+        </h1>
+        <div class="flex gap-2 bg-black/80 p-2 rounded-lg border border-yellow-600/30">
             <button class="lang-btn active" onclick="setLang('uk')">UKR</button>
             <button class="lang-btn" onclick="setLang('ru')">RUS</button>
             <button class="lang-btn" onclick="setLang('en')">ENG</button>
@@ -42,62 +89,107 @@
 
     <div id="main-ui" class="w-full max-w-6xl flex flex-col items-center">
         <main class="w-full grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 z-10">
-            <div class="cyber-card p-4 rounded-xl border-t-yellow-500">
-                <div class="text-[10px] uppercase text-gray-500 font-cyber" data-i18n="gold">Ф'ючерси Золото</div>
-                <div id="gold-val" class="text-2xl font-cyber text-yellow-500">---</div>
+            <div class="cyber-card p-5 rounded-xl border-t-yellow-400">
+                <div class="text-[11px] uppercase text-gray-400 font-cyber font-bold tracking-widest" data-i18n="gold">Ф'ючерси Золото</div>
+                <div id="gold-val" class="text-3xl font-cyber text-yellow-400 mt-1">---</div>
             </div>
-            <div class="cyber-card p-4 rounded-xl border-t-gray-400">
-                <div class="text-[10px] uppercase text-gray-500 font-cyber" data-i18n="silver">Ф'ючерси Срібло</div>
-                <div id="silver-val" class="text-2xl font-cyber text-gray-200">---</div>
+            <div class="cyber-card p-5 rounded-xl border-t-gray-300">
+                <div class="text-[11px] uppercase text-gray-400 font-cyber font-bold tracking-widest" data-i18n="silver">Ф'ючерси Срібло</div>
+                <div id="silver-val" class="text-3xl font-cyber text-gray-200 mt-1">---</div>
             </div>
-            <div class="cyber-card p-4 rounded-xl border-t-orange-500">
-                <div class="text-[10px] uppercase text-gray-500 font-cyber" data-i18n="oil">Нафта WTI</div>
-                <div id="oil-val" class="text-2xl font-cyber text-orange-500">---</div>
+            <div class="cyber-card p-5 rounded-xl border-t-orange-500">
+                <div class="text-[11px] uppercase text-gray-400 font-cyber font-bold tracking-widest" data-i18n="oil">Нафта WTI</div>
+                <div id="oil-val" class="text-3xl font-cyber text-orange-500 mt-1">---</div>
             </div>
-            <div class="cyber-card p-4 rounded-xl border-t-teal-500">
-                <div class="text-[10px] uppercase text-gray-500 font-cyber" data-i18n="dxy">Індекс USD</div>
-                <div id="dxy-val" class="text-2xl font-cyber text-teal-400">---</div>
+            <div class="cyber-card p-5 rounded-xl border-t-yellow-600">
+                <div class="text-[11px] uppercase text-gray-400 font-cyber font-bold tracking-widest" data-i18n="dxy">Індекс USD</div>
+                <div id="dxy-val" class="text-3xl font-cyber text-yellow-600 mt-1">---</div>
             </div>
         </main>
 
         <div class="w-full cyber-card rounded-[40px] p-10 flex flex-col items-center z-10">
-            <div id="btc-val" class="font-cyber text-7xl md:text-8xl font-black mb-8 text-white" style="text-shadow: 0 0 40px var(--br-teal);">---</div>
-            <div class="flex gap-10 mb-8 bg-black/80 p-8 rounded-[40px] border border-gray-800">
-                <div id="light-buy" class="light" style="color: var(--br-green)"></div>
-                <div id="light-wait" class="light" style="color: #ffb700"></div>
+            <div id="btc-val" class="font-cyber text-7xl md:text-8xl font-black mb-8 text-white" style="text-shadow: 0 0 40px var(--br-dark-gold);">---</div>
+            
+            <div class="flex gap-12 mb-8 bg-black/90 p-8 rounded-[40px] border border-gray-800 shadow-2xl">
                 <div id="light-sell" class="light" style="color: var(--br-red)"></div>
+                <div id="light-wait" class="light" style="color: var(--br-gold)"></div>
+                <div id="light-buy" class="light" style="color: var(--br-green)"></div>
             </div>
-            <div id="status-text" class="w-full bg-black/70 border border-purple-500/30 p-8 rounded-3xl text-2xl text-center font-bold text-gray-200">СИНХРОНІЗАЦІЯ...</div>
+            
+            <div id="status-text" class="w-full bg-black/80 border border-yellow-600/30 p-6 rounded-3xl text-2xl text-center font-bold text-gray-200 tracking-wider">СИНХРОНІЗАЦІЯ...</div>
+        </div>
+
+        <div class="w-full cyber-card rounded-2xl p-8 mt-6 z-10 flex flex-col md:flex-row items-center gap-8 border-t-orange-500">
+            <div class="text-8xl hologram-panda">🐼</div>
+            <div class="text-xl md:text-2xl font-bold italic text-yellow-400 leading-relaxed" data-i18n="panda">
+                «Бро, не купуй на вершинах і не продавай на дні ринку. Будь терплячим. Чекай свій сигнал.» 🧘‍♂️
+            </div>
         </div>
     </div>
 
-    <div id="offline-ui" class="w-full max-w-6xl cyber-card rounded-[40px] p-12 flex flex-col items-center z-10 text-center hidden">
-        <div class="sleeping-panda mb-6">🐼💤</div>
-        <h2 class="text-3xl md:text-4xl font-bold text-teal-300 mb-6 font-cyber" data-i18n="off_t">SYSTEM ASLEEP</h2>
-        <p class="text-xl md:text-2xl text-gray-300 leading-relaxed max-w-3xl" data-i18n="off_m">
+    <div id="offline-ui" class="w-full max-w-6xl cyber-card rounded-[40px] p-16 flex flex-col items-center z-10 text-center hidden border-t-red-500">
+        <div class="sleeping-panda mb-8">🐼💤</div>
+        <h2 class="text-4xl md:text-5xl font-bold text-yellow-500 mb-6 font-cyber tracking-widest" data-i18n="off_t">СИСТЕМА СПИТЬ</h2>
+        <p class="text-xl md:text-2xl text-gray-300 leading-relaxed max-w-3xl border-t border-gray-700 pt-6" data-i18n="off_m">
             Ми спимо через те, що у нас відсутній інтернет або електроенергія. Якщо можете допомогти, зробіть донат на Старлінк та батарею Екофло.
         </p>
     </div>
 
-    <div class="w-full max-w-6xl cyber-card rounded-2xl p-6 mt-6 z-10 text-center relative border-t-magenta-500">
-        <div class="flex flex-col md:flex-row justify-center gap-4">
-            <div class="bg-black/60 border border-purple-500/30 p-4 rounded-xl cursor-pointer hover:border-teal-400 flex-1" onclick="copyCrypto('0x748f510de5c5c1f89f160b6e557b464e18f09d91')">
-                <div class="text-[10px] text-gray-500 font-cyber">BTC / USDT (BEP20)</div>
-                <div class="text-xs text-teal-300 font-mono">0x748f510de5c5c1f89f160b6e557b464e18f09d91</div>
+    <div class="w-full max-w-6xl cyber-card rounded-2xl p-8 mt-6 z-10 text-center relative border-t-dark-gold">
+        <h3 class="text-lg font-cyber text-gray-400 mb-6 tracking-widest font-bold" data-i18n="donate_title">ПІДТРИМАТИ ПРОЕКТ</h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="wallet-card p-5 rounded-xl cursor-pointer group flex flex-col justify-center" onclick="copyCrypto('0x748f510de5c5c1f89f160b6e557b464e18f09d91')">
+                <div class="text-xs uppercase text-orange-400 font-cyber font-bold mb-2 flex items-center justify-center gap-2">
+                    <span class="text-xl">₿</span> БІТКОЇН (BSC BEP20)
+                </div>
+                <div class="text-sm text-gray-300 break-all font-mono group-hover:text-white transition-colors">0x748f510de5c5c1f89f160b6e557b464e18f09d91</div>
             </div>
-            <div class="bg-black/60 border border-purple-500/30 p-4 rounded-xl cursor-pointer hover:border-teal-400 flex-1" onclick="copyCrypto('TQ36w3mcrETYDqQe7tofrbn4GWtVbcuaUz')">
-                <div class="text-[10px] text-gray-500 font-cyber">USDT (TRC20)</div>
-                <div class="text-xs text-teal-300 font-mono">TQ36w3mcrETYDqQe7tofrbn4GWtVbcuaUz</div>
+            
+            <div class="wallet-card p-5 rounded-xl cursor-pointer group flex flex-col justify-center" onclick="copyCrypto('0x748f510de5c5c1f89f160b6e557b464e18f09d91')">
+                <div class="text-xs uppercase text-green-400 font-cyber font-bold mb-2 flex items-center justify-center gap-2">
+                    <span class="text-xl">💵</span> USDT (BSC BEP20)
+                </div>
+                <div class="text-sm text-gray-300 break-all font-mono group-hover:text-white transition-colors">0x748f510de5c5c1f89f160b6e557b464e18f09d91</div>
+            </div>
+            
+            <div class="wallet-card p-5 rounded-xl cursor-pointer group flex flex-col justify-center" onclick="copyCrypto('TQ36w3mcrETYDqQe7tofrbn4GWtVbcuaUz')">
+                <div class="text-xs uppercase text-green-400 font-cyber font-bold mb-2 flex items-center justify-center gap-2">
+                    <span class="text-xl">💵</span> USDT (TRON TRC20)
+                </div>
+                <div class="text-sm text-gray-300 break-all font-mono group-hover:text-white transition-colors">TQ36w3mcrETYDqQe7tofrbn4GWtVbcuaUz</div>
             </div>
         </div>
-        <div id="copy-toast" class="copy-toast bg-green-500 text-black px-4 py-1 rounded-full text-xs font-bold">COPIED</div>
+        
+        <div id="copy-toast" class="copy-toast bg-yellow-500 text-black px-6 py-2 rounded-full text-sm font-bold shadow-2xl">АДРЕСУ СКОПІЙОВАНО</div>
     </div>
 
     <script>
         const dict = {
-            uk: { gold: "Ф'ючерси Золото", silver: "Ф'ючерси Срібло", oil: "Нафта WTI", dxy: "Індекс USD", off_t: "СИСТЕМА СПИТЬ", off_m: "Ми спимо через те, що у нас відсутній інтернет або електроенергія. Якщо можете допомогти, зробіть донат на Старлінк та батарею Екофло.", status_SYNC: "СИНХРОНІЗАЦІЯ...", status_BUY: "ГОТУЙСЯ ДО ПОКУПКИ 🟢", status_SELL: "ГОТУЙСЯ ДО ПРОДАЖУ 🔴", status_FLAT: "РИНОК У РІВНОВАЗІ..." },
-            ru: { gold: "Фьючерсы Золото", silver: "Фьючерсы Серебро", oil: "Нефть WTI", dxy: "Индекс USD", off_t: "СИСТЕМА СПИТ", off_m: "Мы спим из-за того, что у нас отсутствует интернет или электричество. Если можете помочь, то сделайте донат на Старлинк и Экофло батарею.", status_SYNC: "СИНХРОНИЗАЦИЯ...", status_BUY: "ГОТОВЬСЯ К ПОКУПКЕ 🟢", status_SELL: "ГОТОВЬСЯ К ПРОДАЖЕ 🔴", status_FLAT: "РЫНОК В РАВНОВЕСИИ..." },
-            en: { gold: "Gold Futures", silver: "Silver Futures", oil: "Oil WTI", dxy: "USD Index", off_t: "SYSTEM ASLEEP", off_m: "We are sleeping because we have no internet or electricity. If you can help, please donate for Starlink and Ecoflow battery.", status_SYNC: "SYNCING...", status_BUY: "PREPARE TO BUY 🟢", status_SELL: "PREPARE TO SELL 🔴", status_FLAT: "MARKET IN BALANCE..." }
+            uk: { 
+                gold: "Ф'ючерси Золото", silver: "Ф'ючерси Срібло", oil: "Нафта WTI", dxy: "Індекс USD", 
+                panda: "«Бро, не купуй на вершинах і не продавай на дні ринку. Будь терплячим. Чекай свій сигнал.» 🧘‍♂️",
+                off_t: "СИСТЕМА СПИТЬ", 
+                off_m: "Ми спимо через те, що у нас відсутній інтернет або електроенергія. Якщо можете допомогти, зробіть донат на Старлінк та батарею Екофло.", 
+                donate_title: "ПІДТРИМАТИ ПРОЕКТ",
+                status_SYNC: "СИНХРОНІЗАЦІЯ...", status_BUY: "ГОТУЙСЯ ДО ПОКУПКИ 🟢", status_SELL: "ГОТУЙСЯ ДО ПРОДАЖУ 🔴", status_FLAT: "РИНОК У РІВНОВАЗІ..." 
+            },
+            ru: { 
+                gold: "Фьючерсы Золото", silver: "Фьючерсы Серебро", oil: "Нефть WTI", dxy: "Индекс USD", 
+                panda: "«Бро, не покупай на вершинах и не продавай на дне рынка. Будь терпелив. Жди свой сигнал.» 🧘‍♂️",
+                off_t: "СИСТЕМА СПИТ", 
+                off_m: "Мы спим из-за того, что у нас отсутствует интернет или электричество. Если можете помочь, то сделайте донат на Старлинк и Экофло батарею.", 
+                donate_title: "ПОДДЕРЖАТЬ ПРОЕКТ",
+                status_SYNC: "СИНХРОНИЗАЦИЯ...", status_BUY: "ГОТОВЬСЯ К ПОКУПКЕ 🟢", status_SELL: "ГОТОВЬСЯ К ПРОДАЖЕ 🔴", status_FLAT: "РЫНОК В РАВНОВЕСИИ..." 
+            },
+            en: { 
+                gold: "Gold Futures", silver: "Silver Futures", oil: "Oil WTI", dxy: "USD Index", 
+                panda: "«Bro, don't buy at the top and don't sell at the bottom. Be patient. Wait for your signal.» 🧘‍♂️",
+                off_t: "SYSTEM ASLEEP", 
+                off_m: "We are sleeping because we have no internet or electricity. If you can help, please donate for Starlink and Ecoflow battery.", 
+                donate_title: "SUPPORT THE PROJECT",
+                status_SYNC: "SYNCING...", status_BUY: "PREPARE TO BUY 🟢", status_SELL: "PREPARE TO SELL 🔴", status_FLAT: "MARKET IN BALANCE..." 
+            }
         };
 
         let currentLang = 'uk'; let currentStatusCode = "SYNC";
@@ -106,11 +198,13 @@
             currentLang = lang;
             document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.innerText.toLowerCase() === lang));
             document.querySelectorAll('[data-i18n]').forEach(el => el.innerText = dict[lang][el.getAttribute('data-i18n')]);
+            document.getElementById('status-text').innerText = dict[currentLang]["status_" + currentStatusCode];
         }
 
         function copyCrypto(text) {
             navigator.clipboard.writeText(text);
-            const t = document.getElementById('copy-toast'); t.classList.add('show');
+            const t = document.getElementById('copy-toast'); 
+            t.classList.add('show');
             setTimeout(() => t.classList.remove('show'), 2000);
         }
 
@@ -135,9 +229,15 @@
                     document.getElementById('status-text').innerText = dict[currentLang]["status_" + currentStatusCode];
                     
                     document.querySelectorAll('.light').forEach(l => l.classList.remove('active'));
-                    if (data.signal === 'BUY') document.getElementById('light-buy').classList.add('active');
-                    else if (data.signal === 'SELL') document.getElementById('light-sell').classList.add('active');
-                    else document.getElementById('light-wait').classList.add('active');
+                    
+                    // Обновленная логика фонариков
+                    if (data.signal === 'BUY') {
+                        document.getElementById('light-buy').classList.add('active');
+                    } else if (data.signal === 'SELL') {
+                        document.getElementById('light-sell').classList.add('active');
+                    } else {
+                        document.getElementById('light-wait').classList.add('active');
+                    }
                 }
             } catch (e) {}
         }
