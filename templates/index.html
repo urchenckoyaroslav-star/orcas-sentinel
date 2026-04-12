@@ -3,9 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PANDA_SENTINEL | PREMIUM TERMINAL</title>
+    
+    <title>PANDA_SENTINEL | Premium Crypto Terminal & Scalping Radar</title>
+    <meta name="description" content="Професійний термінал для крипто-скальпінгу. Аналіз фандингу, ліквідацій та перекосу стакану (Радар) в реальному часі. Торгуй проти натовпу.">
+    <meta name="keywords" content="crypto scalping, btc funding, liquidation heatmap, крипто скальпинг, биткоин ликвидации, фандинг, торговый терминал, радар маркетмейкера, трейдинг бот, BTCUSDT">
+    <meta name="author" content="Orcas Sentinel">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="Ukrainian, Russian, English">
+    
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://btc-scalping-signals.onrender.com/">
+    <meta property="og:title" content="PANDA_SENTINEL | Кібер-Термінал Трейдера">
+    <meta property="og:description" content="Живий радар маркетмейкера. Відстежуй аномалії фандингу та об'єми в стакані. Не купуй на вершинах.">
+    <meta property="og:image" content="https://btc-scalping-signals.onrender.com/static/background.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="PANDA_SENTINEL | Premium Crypto Terminal">
+    <meta name="twitter:description" content="Trade against the crowd. Real-time funding and order book anomaly radar.">
+    <meta name="twitter:image" content="https://btc-scalping-signals.onrender.com/static/background.jpg">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700;900&display=swap" rel="stylesheet">
+    
     <style>
         :root { 
             --br-gold: #ffd700; --br-orange: #ff8c00; --br-dark-gold: #b8860b;
@@ -53,7 +73,6 @@
         }
         .text-neon { animation: neonPulse 3s infinite alternate; }
 
-        /* Зверни увагу: Продаж (Червоний) зліва, Купівля (Зелений) справа, як ти й просив раніше */
         .light { width: 70px; height: 70px; border-radius: 50%; filter: brightness(0.15); border: 4px solid #111; transition: 0.4s; }
         .light.active { filter: brightness(1.8); box-shadow: 0 0 40px currentColor, inset 0 0 20px currentColor; border-color: currentColor; }
 
@@ -231,114 +250,82 @@
 
         let currentLang = 'uk'; 
         let currentStatusCode = "SYNC";
-        
-        // --- АУДІО СИНТЕЗАТОР (КІБЕР-ЗВУКИ БЕЗ ФАЙЛІВ) ---
         let audioCtx;
         let isSoundEnabled = true;
         let isSystemReady = false;
 
         function initAudio() {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
+            if (!audioCtx) { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
             if (audioCtx.state === 'suspended') audioCtx.resume();
         }
 
-        // Шум для дробовика
         function playNoiseBurst(time, duration, vol) {
             if(!audioCtx || !isSoundEnabled) return;
             const bufferSize = audioCtx.sampleRate * duration;
             const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
             const data = buffer.getChannelData(0);
             for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
-            const noise = audioCtx.createBufferSource();
-            noise.buffer = buffer;
-            const filter = audioCtx.createBiquadFilter();
-            filter.type = 'bandpass'; filter.frequency.value = 800;
-            const gain = audioCtx.createGain();
-            gain.gain.setValueAtTime(vol, time);
-            gain.gain.exponentialRampToValueAtTime(0.01, time + duration);
+            const noise = audioCtx.createBufferSource(); noise.buffer = buffer;
+            const filter = audioCtx.createBiquadFilter(); filter.type = 'bandpass'; filter.frequency.value = 800;
+            const gain = audioCtx.createGain(); gain.gain.setValueAtTime(vol, time); gain.gain.exponentialRampToValueAtTime(0.01, time + duration);
             noise.connect(filter); filter.connect(gain); gain.connect(audioCtx.destination);
             noise.start(time);
         }
 
-        // Звук дробовика (два швидких пшики: Ch-chk)
         function playSynthShotgun() {
             if(!audioCtx || !isSoundEnabled) return;
             playNoiseBurst(audioCtx.currentTime, 0.15, 0.6);
             playNoiseBurst(audioCtx.currentTime + 0.25, 0.2, 0.6);
         }
 
-        // Звук холостого пострілу (різкий клік)
         function playSynthDryFire() {
-            if(!audioCtx) return; // Працює навіть якщо загальний звук вимкнено, бо це реакція на кнопку
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.type = 'square';
-            osc.frequency.setValueAtTime(800, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.05);
-            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+            if(!audioCtx) return; 
+            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination); osc.type = 'square';
+            osc.frequency.setValueAtTime(800, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.05);
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
             osc.start(audioCtx.currentTime); osc.stop(audioCtx.currentTime + 0.05);
         }
 
-        // Звук зміни мови (короткий пік)
         function playLangClick() {
             if(!audioCtx || !isSoundEnabled) return;
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.type = 'sine'; osc.frequency.setValueAtTime(1200, audioCtx.currentTime);
-            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination); osc.type = 'sine'; osc.frequency.setValueAtTime(1200, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
             osc.start(audioCtx.currentTime); osc.stop(audioCtx.currentTime + 0.05);
         }
 
-        // Пік для ринкових сигналів
         function playSignalBeep(freq, duration) {
             if (!audioCtx || !isSoundEnabled || !isSystemReady) return;
             try {
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.connect(gain); gain.connect(audioCtx.destination);
-                osc.type = 'square'; osc.frequency.value = freq;
-                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+                const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+                osc.connect(gain); gain.connect(audioCtx.destination); osc.type = 'square'; osc.frequency.value = freq;
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
                 osc.start(); osc.stop(audioCtx.currentTime + duration);
             } catch(e) {}
         }
 
-        // Браузер вимагає клік для запуску аудіо
         document.body.addEventListener('click', () => {
             if (!isSystemReady) {
-                initAudio();
-                isSystemReady = true;
+                initAudio(); isSystemReady = true;
                 if(isSoundEnabled) playSynthShotgun();
             }
-        }, { once: true }); // Спрацює лише один раз при першому кліці
+        }, { once: true }); 
 
         function toggleSound() {
-            initAudio(); // Убезпечуємось
-            playSynthDryFire(); // Холостий клік
+            initAudio(); playSynthDryFire(); 
             isSoundEnabled = !isSoundEnabled;
             const btn = document.getElementById('sound-btn');
             btn.innerText = isSoundEnabled ? '🔊' : '🔇';
             btn.classList.toggle('active', isSoundEnabled);
         }
 
-        // --- ЛОГІКА ТЕРМІНАЛУ З ДИНАМІЧНИМ ПЕРЕКЛАДОМ ---
-        let terminalLogs = [
-            { time: null, key: 'sys_init' },
-            { time: null, key: 'sys_wait' }
-        ];
+        let terminalLogs = [{ time: null, key: 'sys_init' }, { time: null, key: 'sys_wait' }];
 
         function renderTerminal() {
-            const logBox = document.getElementById('terminal-log');
-            logBox.innerHTML = '';
+            const logBox = document.getElementById('terminal-log'); logBox.innerHTML = '';
             terminalLogs.forEach(log => {
-                const div = document.createElement('div');
-                div.className = "terminal-line";
+                const div = document.createElement('div'); div.className = "terminal-line";
                 const timeStr = log.time ? `[${log.time}] ` : '';
                 div.innerText = `> ${timeStr}${dict[currentLang][log.key]}`;
                 logBox.appendChild(div);
@@ -348,27 +335,20 @@
         function addTerminalLog(msgKey) {
             const time = new Date().toLocaleTimeString();
             const lastLog = terminalLogs[terminalLogs.length - 1];
-            if(lastLog && lastLog.key === msgKey) return; // Захист від спаму однакових логів
+            if(lastLog && lastLog.key === msgKey) return; 
 
             terminalLogs.push({ time: time, key: msgKey });
             if (terminalLogs.length > 4) terminalLogs.shift();
             renderTerminal();
         }
 
-        // --- ПЕРЕКЛАД ---
         function setLang(lang) {
-            initAudio();
-            if (isSystemReady) playLangClick();
-
+            initAudio(); if (isSystemReady) playLangClick();
             currentLang = lang;
-            document.querySelectorAll('.lang-btn').forEach(b => {
-                b.classList.toggle('active', b.getAttribute('data-lang') === lang);
-            });
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                el.innerText = dict[lang][el.getAttribute('data-i18n')];
-            });
+            document.querySelectorAll('.lang-btn').forEach(b => { b.classList.toggle('active', b.getAttribute('data-lang') === lang); });
+            document.querySelectorAll('[data-i18n]').forEach(el => { el.innerText = dict[lang][el.getAttribute('data-i18n')]; });
             document.getElementById('status-text').innerText = dict[currentLang]["status_" + currentStatusCode];
-            renderTerminal(); // Оновлюємо логи новою мовою
+            renderTerminal(); 
         }
 
         function copyCrypto(text) {
@@ -377,13 +357,10 @@
             setTimeout(() => t.classList.remove('show'), 2000);
         }
 
-        // --- АНІМАЦІЯ ЦИФР ---
         let lastVals = { btc: 0, gold: 0, silver: 0, oil: 0, dxy: 0 };
         function animateValue(id, start, end, isInt) {
             if (start === end) return;
-            const obj = document.getElementById(id);
-            const duration = 1000;
-            let startTimestamp = null;
+            const obj = document.getElementById(id); const duration = 1000; let startTimestamp = null;
             const step = (timestamp) => {
                 if (!startTimestamp) startTimestamp = timestamp;
                 const progress = Math.min((timestamp - startTimestamp) / duration, 1);
@@ -431,7 +408,6 @@
         }
         setInterval(update, 2000);
         
-        // Стартова ініціалізація
         setLang('uk');
     </script>
 </body>
