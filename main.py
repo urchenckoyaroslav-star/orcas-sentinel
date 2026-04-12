@@ -1,62 +1,40 @@
-from flask import Flask, render_template, jsonify, request
 import time
+import random
 
-app = Flask(__name__)
+@app.route('/api/chart_data')
+def get_chart_data():
+    """
+    Отдает исторические данные графика и сигналы.
+    В БУДУЩЕМ: Здесь ты напишешь код, который читает твой Excel (pandas.read_excel)
+    и конвертирует его в такой же формат. Пока генерируем тестовые свечи.
+    """
+    data = []
+    # Генерируем последние 60 "свечей" для теста
+    current_time = int(time.time()) - (60 * 15 * 60) # Начинаем издалека (15-минутки)
+    base_price = 71000
 
-market_state = {
-    "btc_price": 0, "gold_price": 0, "silver_price": 0, "oil_price": 0, "dxy_index": 105.20,
-    "signal": "WAIT", "status_code": "OFFLINE", "funding": 0, "radar": 0, "last_update": 0 
-}
-
-# --- НАЛАШТУВАННЯ ЛОГІКИ ---
-NEUTRAL_FUNDING_MAX = 0.0050 # Фандинг вважається нейтральним до ±0.0050%
-SKEW_THRESHOLD = 25.0        # Перекіс у стакані > 25%
-
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-@app.route('/api/pulse')
-def get_pulse():
-    now = time.time()
-    if market_state["last_update"] == 0 or (now - market_state["last_update"] > 180):
-        market_state["status_code"] = "OFFLINE"
-    return jsonify(market_state)
-
-@app.route('/api/update', methods=['POST'])
-def update_data():
-    data = request.json
-    if not data: return {"status": "error"}, 400
-
-    try:
-        market_state["btc_price"] = data.get("btc", market_state["btc_price"])
-        market_state["gold_price"] = data.get("gold", market_state["gold_price"])
-        market_state["silver_price"] = data.get("silver", market_state["silver_price"])
-        market_state["oil_price"] = data.get("oil", market_state["oil_price"])
-        market_state["dxy_index"] = data.get("dxy", market_state["dxy_index"])
+    for i in range(60):
+        open_p = base_price + random.uniform(-100, 100)
+        close_p = open_p + random.uniform(-200, 200)
+        high_p = max(open_p, close_p) + random.uniform(0, 100)
+        low_p = min(open_p, close_p) - random.uniform(0, 100)
+        base_price = close_p
         
-        fund = data.get("fund", 0)
-        radar = data.get("radar", 0)
-        market_state["funding"] = fund
-        market_state["radar"] = radar
-        market_state["last_update"] = time.time() 
+        # Рандомно раскидываем сигналы светофора для визуала
+        signal = "WAIT"
+        rand_val = random.random()
+        if rand_val > 0.85:
+            signal = "BUY"
+        elif rand_val < 0.15:
+            signal = "SELL"
+
+        data.append({
+            "time": current_time + (i * 15 * 60), # +15 минут
+            "open": round(open_p, 2),
+            "high": round(high_p, 2),
+            "low": round(low_p, 2),
+            "close": round(close_p, 2),
+            "signal": signal
+        })
         
-        # --- ЛОГІКА ПРОТИ НАТОВПУ ---
-        # 1. Купівля: Фандинг нейтральний/від'ємний І продавців більше на 25% (радар < -25)
-        if fund <= NEUTRAL_FUNDING_MAX and radar <= -SKEW_THRESHOLD:
-            market_state["signal"], market_state["status_code"] = "BUY", "BUY"
-        
-        # 2. Продаж: Фандинг нейтральний/додатний І покупців більше на 25% (радар > 25)
-        elif fund >= -NEUTRAL_FUNDING_MAX and radar >= SKEW_THRESHOLD:
-            market_state["signal"], market_state["status_code"] = "SELL", "SELL"
-            
-        else:
-            market_state["signal"], market_state["status_code"] = "WAIT", "FLAT"
-
-        return {"status": "success"}, 200
-
-    except Exception as e:
-        return {"status": "error"}, 500
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    return jsonify(data)
