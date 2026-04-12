@@ -1,85 +1,44 @@
-from flask import Flask, render_template, jsonify
-import pandas as pd
-import os
-import time
+from flask import Flask, render_template, jsonify, request
 
 app = Flask(__name__)
 
-# Имя твоего файла
-CSV_FILE = "ORCAS_PULSE_LOG.xlsx - Макро Пульс 5м.csv"
+# Память сервера: здесь хранятся данные, которые пришлет твой ноутбук
+server_data = {
+    "pulse": {
+        "btc_price": 0.0,
+        "gold_price": 2340.50,
+        "silver_price": 28.15,
+        "oil_price": 82.40,
+        "dxy_index": 104.20,
+        "signal": "WAIT",
+        "status_code": "SYNC"
+    },
+    "chart": []
+}
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
+@app.route('/api/update', methods=['POST'])
+def update_data():
+    """СЮДА СТУЧИТСЯ ТВОЙ НОУТБУК (bridge.py) И ОТДАЕТ EXCEL-ДАННЫЕ"""
+    data = request.json
+    if data:
+        server_data["pulse"] = data.get("pulse", server_data["pulse"])
+        server_data["chart"] = data.get("chart", server_data["chart"])
+        return {"status": "success"}, 200
+    return {"error": "No data"}, 400
+
 @app.route('/api/pulse')
 def pulse():
-    """Берет самую последнюю строку из файла для светофора и цены BTC"""
-    current_market_data = {
-        "btc_price": 0.0,
-        "gold_price": 2340.50, # Остальные пока статичны
-        "silver_price": 28.15,
-        "oil_price": 82.40,
-        "dxy_index": 104.20,
-        "signal": "WAIT",
-        "status_code": "FLAT"
-    }
-
-    if os.path.exists(CSV_FILE):
-        try:
-            df = pd.read_csv(CSV_FILE)
-            if not df.empty:
-                # Берем самую последнюю строку из таблицы
-                last_row = df.iloc[-1]
-                current_market_data["btc_price"] = float(last_row.get('Close', 0.0))
-                
-                # Берем последний сигнал
-                raw_signal = str(last_row.get('Signal', 'WAIT')).upper().strip()
-                if raw_signal == 'BUY':
-                    current_market_data["signal"] = "BUY"
-                    current_market_data["status_code"] = "BUY"
-                elif raw_signal == 'SELL':
-                    current_market_data["signal"] = "SELL"
-                    current_market_data["status_code"] = "SELL"
-                else:
-                    current_market_data["signal"] = "WAIT"
-                    current_market_data["status_code"] = "FLAT"
-        except Exception as e:
-            print(f"Помилка читання CSV для пульсу: {e}")
-
-    return jsonify(current_market_data)
+    """Отдает сайту верхние виджеты и светофор"""
+    return jsonify(server_data["pulse"])
 
 @app.route('/api/chart_data')
 def chart_data():
-    """Строит историю графика из файла для неоновых свечей"""
-    if not os.path.exists(CSV_FILE):
-        return jsonify([])
-
-    try:
-        df = pd.read_csv(CSV_FILE)
-        # Переводим время из формата Excel в Unix (секунды) для графика
-        df['UnixTime'] = pd.to_datetime(df['Time']).astype('int64') // 10**9
-
-        data = []
-        for index, row in df.iterrows():
-            raw_signal = str(row.get('Signal', 'WAIT')).upper().strip()
-            if raw_signal not in ['BUY', 'SELL']:
-                raw_signal = 'WAIT'
-
-            data.append({
-                "time": int(row['UnixTime']),
-                "open": float(row['Open']),
-                "high": float(row['High']),
-                "low": float(row['Low']),
-                "close": float(row['Close']),
-                "signal": raw_signal
-            })
-            
-        return jsonify(data)
-        
-    except Exception as e:
-        print(f"Помилка обробки файлу для графіка: {e}")
-        return jsonify([])
+    """Отдает сайту неоновые свечи"""
+    return jsonify(server_data["chart"])
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
