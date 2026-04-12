@@ -1,64 +1,76 @@
 from flask import Flask, render_template, jsonify, request
 import time
-import requests
 
 app = Flask(__name__)
 
-# --- НАЛАШТУВАННЯ TELEGRAM ---
-TELEGRAM_TOKEN = "8579627228:AAERKL8GXuICCDakodLHc5mNl_ZqRktsAek"
-CHAT_ID = "8315278464"
-known_ips = set() # Сюди записуємо унікальних гостей
-
+# --- ЦЕНТРАЛЬНЕ СХОВИЩЕ ДАНИХ (PANDA STATE) ---
 market_state = {
-    "btc_price": 0, "gold_price": 0, "silver_price": 0,
-    "oil_price": 0, "dxy_index": 105.20,
-    "signal": "WAIT", "status_code": "SYNC",
-    "funding": 0, "last_update": 0
+    "btc_price": 0,
+    "gold_price": 0,
+    "silver_price": 0,
+    "oil_price": 0,
+    "dxy_index": 105.20,
+    "signal": "WAIT",
+    "status_code": "SYNC",
+    "funding": 0,
+    "last_update": 0  # Час останнього сигналу від ноута
 }
 
-def send_tg_notification(ip):
-    """Надсилає повідомлення в телеграм про нового гостя"""
-    try:
-        msg = f"🐼 *Panda Sentinel Alert*\n\nНовий відвідувач на сайті!\n📍 IP: `{ip}`"
-        url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
-        requests.post(url, data={"chat_id": CHAT_ID, "text": msg, "parse_mode": "Markdown"})
-    except: pass
+# Поріг фандингу для сигналів (0.0010%)
+FUNDING_THRESHOLD = 0.0010
 
 @app.route('/')
 def index():
-    # Отримуємо IP гостя
-    visitor_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
-    if visitor_ip and visitor_ip not in known_ips:
-        known_ips.add(visitor_ip)
-        send_tg_notification(visitor_ip)
-    
+    """Головна сторінка терміналу"""
     return render_template('index.html')
 
 @app.route('/api/pulse')
 def get_pulse():
+    """Віддача даних на фронтенд (для JavaScript на сайті)"""
+    # Перевірка на "Живучість" — якщо даних немає 180 секунд, панда засинає
     if time.time() - market_state["last_update"] > 180 and market_state["last_update"] != 0:
         market_state["status_code"] = "OFFLINE"
+    
     return jsonify(market_state)
 
 @app.route('/api/update', methods=['POST'])
 def update_data():
+    """
+    СЕКРЕТНИЙ ЕНДПОЇНТ ДЛЯ ВАШОГО ЛЕПТОПА (bridge.py)
+    Приймає реальні ціни та фандинг.
+    """
     data = request.json
+    if not data:
+        return {"status": "error", "message": "No data received"}, 400
+
     try:
-        market_state.update({
-            "btc_price": data.get("btc"),
-            "gold_price": data.get("gold"),
-            "silver_price": data.get("silver"),
-            "oil_price": data.get("oil"),
-            "dxy_index": data.get("dxy"),
-            "funding": data.get("fund"),
-            "last_update": time.time()
-        })
-        fund = market_state["funding"]
-        if fund < -0.0010: market_state["signal"], market_state["status_code"] = "BUY", "BUY"
-        elif fund > 0.0010: market_state["signal"], market_state["status_code"] = "SELL", "SELL"
-        else: market_state["signal"], market_state["status_code"] = "WAIT", "FLAT"
+        # Оновлюємо котирування з payload
+        market_state["btc_price"] = data.get("btc", market_state["btc_price"])
+        market_state["gold_price"] = data.get("gold", market_state["gold_price"])
+        market_state["silver_price"] = data.get("silver", market_state["silver_price"])
+        market_state["oil_price"] = data.get("oil", market_state["oil_price"])
+        market_state["dxy_index"] = data.get("dxy", market_state["dxy_index"])
+        
+        # Отримуємо фандинг для розрахунку сигналу
+        fund = data.get("fund", 0)
+        market_state["funding"] = fund
+        market_state["last_update"] = time.time() # Фіксуємо час приходу даних
+        
+        # --- ЛОГІКА СИГНАЛІВ ПАНДИ ---
+        if fund < -FUNDING_THRESHOLD:
+            market_state["signal"], market_state["status_code"] = "BUY", "BUY"
+        elif fund > FUNDING_THRESHOLD:
+            market_state["signal"], market_state["status_code"] = "SELL", "SELL"
+        else:
+            market_state["signal"], market_state["status_code"] = "WAIT", "FLAT"
+
+        print(f"📊 [API UPDATE] BTC: {market_state['btc_price']} | Fund: {fund}% | DXY: {market_state['dxy_index']}")
         return {"status": "success"}, 200
-    except: return {"status": "error"}, 400
+
+    except Exception as e:
+        print(f"❌ Помилка при оновленні: {e}")
+        return {"status": "error", "message": str(e)}, 500
 
 if __name__ == '__main__':
+    # На Render сервер має слухати на 0.0.0.0
     app.run(host='0.0.0.0', port=5000)
