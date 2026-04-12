@@ -3,21 +3,14 @@ import time
 
 app = Flask(__name__)
 
-# --- ЦЕНТРАЛЬНЕ СХОВИЩЕ ДАНИХ (PANDA STATE) ---
 market_state = {
-    "btc_price": 0,
-    "gold_price": 0,
-    "silver_price": 0,
-    "oil_price": 0,
-    "dxy_index": 105.20,
-    "signal": "WAIT",
-    "status_code": "OFFLINE", # Початковий статус тепер завжди OFFLINE
-    "funding": 0,
-    "last_update": 0 
+    "btc_price": 0, "gold_price": 0, "silver_price": 0, "oil_price": 0, "dxy_index": 105.20,
+    "signal": "WAIT", "status_code": "OFFLINE", "funding": 0, "radar": 0, "last_update": 0 
 }
 
-# Поріг фандингу
-FUNDING_THRESHOLD = 0.0010
+# --- НАЛАШТУВАННЯ ЛОГІКИ ---
+NEUTRAL_FUNDING_MAX = 0.0050 # Фандинг вважається нейтральним до ±0.0050%
+SKEW_THRESHOLD = 25.0        # Перекіс у стакані > 25%
 
 @app.route('/')
 def index():
@@ -25,18 +18,15 @@ def index():
 
 @app.route('/api/pulse')
 def get_pulse():
-    # Якщо даних немає взагалі (0) або вони старі (> 180 сек) — Панда спить
     now = time.time()
     if market_state["last_update"] == 0 or (now - market_state["last_update"] > 180):
         market_state["status_code"] = "OFFLINE"
-    
     return jsonify(market_state)
 
 @app.route('/api/update', methods=['POST'])
 def update_data():
     data = request.json
-    if not data:
-        return {"status": "error", "message": "No data received"}, 400
+    if not data: return {"status": "error"}, 400
 
     try:
         market_state["btc_price"] = data.get("btc", market_state["btc_price"])
@@ -46,21 +36,27 @@ def update_data():
         market_state["dxy_index"] = data.get("dxy", market_state["dxy_index"])
         
         fund = data.get("fund", 0)
+        radar = data.get("radar", 0)
         market_state["funding"] = fund
+        market_state["radar"] = radar
         market_state["last_update"] = time.time() 
         
-        # Визначаємо статус на основі фандингу
-        if fund < -FUNDING_THRESHOLD:
+        # --- ЛОГІКА ПРОТИ НАТОВПУ ---
+        # 1. Купівля: Фандинг нейтральний/від'ємний І продавців більше на 25% (радар < -25)
+        if fund <= NEUTRAL_FUNDING_MAX and radar <= -SKEW_THRESHOLD:
             market_state["signal"], market_state["status_code"] = "BUY", "BUY"
-        elif fund > FUNDING_THRESHOLD:
+        
+        # 2. Продаж: Фандинг нейтральний/додатний І покупців більше на 25% (радар > 25)
+        elif fund >= -NEUTRAL_FUNDING_MAX and radar >= SKEW_THRESHOLD:
             market_state["signal"], market_state["status_code"] = "SELL", "SELL"
+            
         else:
             market_state["signal"], market_state["status_code"] = "WAIT", "FLAT"
 
         return {"status": "success"}, 200
 
     except Exception as e:
-        return {"status": "error", "message": str(e)}, 500
+        return {"status": "error"}, 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
