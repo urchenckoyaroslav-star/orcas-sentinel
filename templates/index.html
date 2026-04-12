@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐼</text></svg>">
-    <title>PANDA_SENTINEL | Premium</title>
+    <title>PANDA_SENTINEL | Quantum</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
@@ -13,7 +13,7 @@
     <script src="https://cdn.jsdelivr.net/npm/odometer@0.4.8/odometer.min.js"></script>
 
     <style>
-        :root { --br-gold: #ffd700; --br-green: #39ff14; --br-red: #ff003c; }
+        :root { --br-gold: #ffd700; --br-green: #39ff14; --br-red: #ff003c; --br-cyan: #04d9ff; --br-orange: #ff8c00; }
         body { 
             background-color: #050508; 
             background-image: linear-gradient(rgba(5, 5, 8, 0.85), rgba(5, 5, 8, 0.95)), url('/static/background.jpg');
@@ -21,32 +21,43 @@
             color: #fff; font-family: 'Rajdhani', sans-serif; overflow-x: hidden; 
         }
         
-        .fog { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, rgba(15, 25, 45, 0.4) 0%, transparent 100%); z-index: -1; animation: fogPulse 8s infinite alternate;}
-        @keyframes fogPulse { from { opacity: 0.5; } to { opacity: 1; } }
+        .fog { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, rgba(15, 25, 45, 0.4) 0%, transparent 100%); z-index: -1; animation: fogPulse 6s infinite alternate ease-in-out;}
+        @keyframes fogPulse { 0% { opacity: 0.4; transform: scale(1); } 100% { opacity: 0.9; transform: scale(1.05); } }
 
         .scanlines { position: fixed; inset: 0; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%); background-size: 100% 4px; pointer-events: none; z-index: 100; opacity: 0.15; }
 
-        .cyber-card { background: rgba(10, 10, 15, 0.7); backdrop-filter: blur(15px); border: 1px solid rgba(255, 215, 0, 0.1); border-top: 3px solid var(--br-gold); box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
-        .font-cyber { font-family: 'Orbitron', sans-serif; }
+        .cyber-card { background: rgba(10, 10, 15, 0.7); backdrop-filter: blur(15px); border: 1px solid rgba(255, 215, 0, 0.1); border-top: 3px solid var(--br-gold); box-shadow: 0 20px 50px rgba(0,0,0,0.8); transition: all 0.3s; }
+        .cyber-card.hover-fx:hover { border-color: var(--br-orange); transform: translateY(-3px); box-shadow: 0 20px 50px rgba(255, 140, 0, 0.2); }
         
+        .font-cyber { font-family: 'Orbitron', sans-serif; }
         .breath { animation: pulseB 3s infinite alternate; }
         @keyframes pulseB { from { opacity: 0.8; text-shadow: 0 0 10px var(--br-gold); } to { opacity: 1; text-shadow: 0 0 25px var(--br-gold); } }
 
-        .light { width: 75px; height: 75px; border-radius: 50%; filter: brightness(0.1); border: 4px solid #111; transition: 0.6s; box-shadow: inset 0 0 10px rgba(0,0,0,0.8); }
-        .light.active { filter: brightness(1.8); box-shadow: 0 0 60px currentColor, inset 0 0 20px currentColor; border-color: currentColor; transform: scale(1.1); }
+        .light { width: 75px; height: 75px; border-radius: 50%; filter: brightness(0.1); border: 4px solid #111; transition: 0.4s; box-shadow: inset 0 0 10px rgba(0,0,0,0.8); }
+        .light.active { filter: brightness(1.8); box-shadow: 0 0 60px currentColor, inset 0 0 20px currentColor; border-color: currentColor; transform: scale(1.15); }
         
         .odometer { font-family: 'Orbitron', sans-serif !important; font-weight: 900; }
         
         #sleep-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.97); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; backdrop-filter: blur(15px); overflow-y: auto; padding: 20px; }
-        
         .toast { position: fixed; bottom: -50px; left: 50%; transform: translateX(-50%); background: var(--br-green); color: #000; padding: 12px 30px; border-radius: 50px; font-weight: 900; transition: 0.4s; z-index: 3000; box-shadow: 0 0 20px var(--br-green); }
         .toast.show { bottom: 40px; }
+
+        /* GLITCH EFFECT ДЛЯ СМЕНЫ СИГНАЛА */
+        .glitch-fx { animation: glitchAnim 0.3s cubic-bezier(.25, .46, .45, .94) both; }
+        @keyframes glitchAnim {
+            0% { transform: translate(0) }
+            20% { transform: translate(-5px, 5px) }
+            40% { transform: translate(-5px, -5px) }
+            60% { transform: translate(5px, 5px) }
+            80% { transform: translate(5px, -5px) }
+            100% { transform: translate(0) }
+        }
     </style>
 </head>
 <body class="min-h-screen p-6 flex flex-col items-center">
     <div class="fog"></div>
     <div class="scanlines"></div>
-    <div id="toast" class="toast">СКОПІЙОВАНО!</div>
+    <div id="toast" class="toast">СКОПИРОВАНО!</div>
 
     <audio id="bg-music" loop><source src="/static/Mortal Kombat - Maine Theme (Original).mp3" type="audio/mpeg"></audio>
 
@@ -54,18 +65,18 @@
         <div class="text-[100px] md:text-[120px] animate-bounce mt-10">🐼💤</div>
         <h2 class="font-cyber text-3xl md:text-4xl text-yellow-500 mb-4 uppercase">System Asleep</h2>
         <p class="text-lg md:text-xl text-gray-400 max-w-2xl px-6 leading-relaxed mb-8">
-            Бот Оркас зараз офлайн. Підтримайте розробника донатом на новий сервер, купівлю Starlink та оплату електрики, щоб система працювала 24/7, коли мій ноутбук спить.
+            Бот Оркас зараз офлайн. Підтримайте розробника донатом на новий сервер, купівлю Starlink та оплату електрики.
         </p>
         <div class="grid grid-cols-1 gap-4 w-full max-w-lg px-4 mb-10">
-            <div class="bg-black/60 p-5 rounded-2xl border border-white/10 cursor-pointer hover:border-orange-500 transition shadow-lg" onclick="copy('1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2')">
+            <div class="bg-black/60 p-5 rounded-2xl border border-white/10 cursor-pointer hover:border-orange-500 ui-interact shadow-lg" onclick="copy('1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2')">
                 <div class="flex justify-between mb-2"><span class="text-[11px] text-orange-400 font-cyber font-bold uppercase">₿ BTC (NATIVE)</span><span>📋</span></div>
                 <div class="text-[12px] text-gray-400 font-mono break-all text-left">1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2</div>
             </div>
-            <div class="bg-black/60 p-5 rounded-2xl border border-white/10 cursor-pointer hover:border-yellow-500 transition shadow-lg" onclick="copy('0x748f510de5c5c1f89f160b6e557b464e18f09d91')">
+            <div class="bg-black/60 p-5 rounded-2xl border border-white/10 cursor-pointer hover:border-yellow-500 ui-interact shadow-lg" onclick="copy('0x748f510de5c5c1f89f160b6e557b464e18f09d91')">
                 <div class="flex justify-between mb-2"><span class="text-[11px] text-yellow-400 font-cyber font-bold uppercase">💵 USDT (BEP20)</span><span>📋</span></div>
                 <div class="text-[12px] text-gray-400 font-mono break-all text-left">0x748f510de5c5c1f89f160b6e557b464e18f09d91</div>
             </div>
-            <div class="bg-black/60 p-5 rounded-2xl border border-white/10 cursor-pointer hover:border-green-500 transition shadow-lg" onclick="copy('TQ36w3mcrETYDqQe7tofrbn4GWtVbcuaUz')">
+            <div class="bg-black/60 p-5 rounded-2xl border border-white/10 cursor-pointer hover:border-green-500 ui-interact shadow-lg" onclick="copy('TQ36w3mcrETYDqQe7tofrbn4GWtVbcuaUz')">
                 <div class="flex justify-between mb-2"><span class="text-[11px] text-green-400 font-cyber font-bold uppercase">💵 USDT (TRC20)</span><span>📋</span></div>
                 <div class="text-[12px] text-gray-400 font-mono break-all text-left">TQ36w3mcrETYDqQe7tofrbn4GWtVbcuaUz</div>
             </div>
@@ -75,22 +86,36 @@
     <header class="w-full max-w-6xl flex justify-between items-center mb-8 z-10">
         <h1 class="font-cyber text-3xl md:text-4xl font-black text-white breath">PANDA_<span style="color:var(--br-gold)">SENTINEL</span></h1>
         <div class="flex gap-3 items-center">
-            <button id="sound-btn" class="bg-black/60 border border-white/10 px-3 py-1 rounded-xl text-lg hover:bg-white/10 transition" onclick="toggleSound()">🔇</button>
+            <button id="sound-btn" class="bg-black/60 border border-white/10 px-3 py-1 rounded-xl text-lg ui-interact" onclick="toggleSound()">🔇</button>
             <div class="flex bg-black/60 p-1 rounded-xl border border-white/10">
-                <button class="lang-btn px-3 py-1 text-xs text-gray-400 hover:text-white transition" data-lang="en" onclick="setLang('en')">ENG</button>
-                <button class="lang-btn px-3 py-1 text-xs font-bold text-yellow-500 border border-yellow-500/30 rounded" data-lang="uk" onclick="setLang('uk')">UKR</button>
-                <button class="lang-btn px-3 py-1 text-xs text-gray-400 hover:text-white transition" data-lang="ru" onclick="setLang('ru')">RUS</button>
+                <button class="lang-btn ui-interact px-3 py-1 text-xs text-gray-400 hover:text-white" data-lang="en" onclick="setLang('en')">ENG</button>
+                <button class="lang-btn ui-interact px-3 py-1 text-xs font-bold text-yellow-500 border border-yellow-500/30 rounded" data-lang="uk" onclick="setLang('uk')">UKR</button>
+                <button class="lang-btn ui-interact px-3 py-1 text-xs text-gray-400 hover:text-white" data-lang="ru" onclick="setLang('ru')">RUS</button>
             </div>
         </div>
     </header>
 
     <div class="w-full max-w-6xl flex flex-col items-center z-10">
         
-        <div class="w-full grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <div class="cyber-card p-4 rounded-xl text-center"><div class="text-[10px] text-gray-500 font-cyber mb-1 font-bold tracking-widest" data-i18n="gold">Gold Futures</div><div id="gold-val" class="text-2xl font-cyber text-yellow-400">0.00</div></div>
-            <div class="cyber-card p-4 rounded-xl text-center"><div class="text-[10px] text-gray-500 font-cyber mb-1 font-bold tracking-widest" data-i18n="silver">Silver Futures</div><div id="silver-val" class="text-2xl font-cyber text-gray-200">0.00</div></div>
-            <div class="cyber-card p-4 rounded-xl text-center"><div class="text-[10px] text-gray-500 font-cyber mb-1 font-bold tracking-widest" data-i18n="oil">Oil WTI</div><div id="oil-val" class="text-2xl font-cyber text-orange-500">0.00</div></div>
-            <div class="cyber-card p-4 rounded-xl text-center"><div class="text-[10px] text-gray-500 font-cyber mb-1 font-bold tracking-widest" data-i18n="dxy">USD Index</div><div id="dxy-val" class="text-2xl font-cyber text-cyan-400">0.00</div></div>
+        <div class="w-full grid grid-cols-2 md:grid-cols-6 gap-3 mb-6">
+            <div class="cyber-card p-3 rounded-xl flex items-center justify-center h-[70px]"><div class="tradingview-widget-container w-full"><div class="tradingview-widget-container__widget"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/tv-widget-single-quote.js" async>{"symbol":"COMEX:GC1!","width":"100%","colorTheme":"dark","isTransparent":true,"locale":"uk"}</script></div></div>
+            
+            <div class="cyber-card p-3 rounded-xl h-[70px] flex flex-col justify-center items-center border-t-cyan-400 shadow-[0_0_15px_rgba(4,217,255,0.2)]">
+                <div class="text-[8px] text-cyan-400 font-cyber font-bold tracking-widest mb-1 animate-pulse uppercase">AI Tech Demand</div>
+                <div class="tradingview-widget-container w-full"><div class="tradingview-widget-container__widget"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/tv-widget-single-quote.js" async>{"symbol":"COMEX:SI1!","width":"100%","colorTheme":"dark","isTransparent":true,"locale":"uk"}</script></div>
+            </div>
+            
+            <div class="cyber-card p-3 rounded-xl flex items-center justify-center h-[70px]"><div class="tradingview-widget-container w-full"><div class="tradingview-widget-container__widget"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/tv-widget-single-quote.js" async>{"symbol":"NYMEX:CL1!","width":"100%","colorTheme":"dark","isTransparent":true,"locale":"uk"}</script></div></div>
+            <div class="cyber-card p-3 rounded-xl flex items-center justify-center h-[70px]"><div class="tradingview-widget-container w-full"><div class="tradingview-widget-container__widget"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/tv-widget-single-quote.js" async>{"symbol":"TVC:DXY","width":"100%","colorTheme":"dark","isTransparent":true,"locale":"uk"}</script></div></div>
+            
+            <div class="cyber-card p-3 rounded-xl flex flex-col justify-center items-center h-[70px] border-t-gray-500">
+                <div class="text-[9px] text-gray-500 font-cyber font-bold tracking-widest uppercase">US TGA Balance</div>
+                <div class="text-lg font-cyber text-gray-300 mt-1">~$750B</div>
+            </div>
+            <div class="cyber-card p-3 rounded-xl flex flex-col justify-center items-center h-[70px] border-t-green-500">
+                <div class="text-[9px] text-green-600 font-cyber font-bold tracking-widest uppercase">US M2 Supply</div>
+                <div class="text-lg font-cyber text-green-400 mt-1">~$21.0T</div>
+            </div>
         </div>
 
         <div class="w-full cyber-card rounded-[50px] p-8 flex flex-col items-center mb-10">
@@ -101,11 +126,26 @@
                 </span>
             </div>
 
-            <div class="w-full h-[450px] mb-10 rounded-3xl overflow-hidden border border-white/10" id="tv_chart"></div>
+            <div class="w-full h-[400px] mb-8 rounded-3xl overflow-hidden border border-white/10" id="tv_chart"></div>
 
-            <div class="text-xs uppercase text-cyan-400 font-cyber tracking-[0.6em] mb-4 opacity-80" data-i18n="btc_label">РИНКОВА ЦІНА БІТКОЇНА</div>
-            <div class="flex items-center justify-center text-6xl md:text-9xl mb-12">
+            <div class="text-xs uppercase text-cyan-400 font-cyber tracking-[0.6em] mb-2 opacity-80" data-i18n="btc_label">РИНКОВА ЦІНА БІТКОЇНА</div>
+            <div class="flex items-center justify-center text-6xl md:text-9xl mb-6">
                 <span class="font-cyber mr-2 md:mr-4 text-gray-500">$</span><div id="btc-val" class="odometer text-white">0</div>
+            </div>
+
+            <div class="w-full max-w-2xl flex justify-between items-center bg-black/50 border border-white/10 p-4 rounded-3xl mb-10 shadow-inner">
+                <div class="text-center w-1/3">
+                    <div class="text-[9px] text-gray-500 font-cyber tracking-widest mb-1">BINANCE</div>
+                    <div id="spread-binance" class="text-xl text-yellow-500 font-cyber">0.00</div>
+                </div>
+                <div class="text-center w-1/3 border-x border-white/10" id="spread-box">
+                    <div class="text-[10px] text-gray-400 font-bold font-cyber tracking-[0.2em] mb-1">NET SPREAD</div>
+                    <div id="spread-delta" class="text-2xl text-white font-cyber font-black">0.00</div>
+                </div>
+                <div class="text-center w-1/3">
+                    <div class="text-[9px] text-gray-500 font-cyber tracking-widest mb-1">COINBASE</div>
+                    <div id="spread-coinbase" class="text-xl text-blue-400 font-cyber">0.00</div>
+                </div>
             </div>
 
             <div class="flex gap-8 md:gap-14 mb-8 bg-black/60 p-8 md:p-10 rounded-[60px] border border-white/5 shadow-inner">
@@ -114,7 +154,7 @@
                 <div id="l-green" class="light" style="color:var(--br-green)"></div>
             </div>
             
-            <div id="status" class="w-full max-w-3xl bg-black/90 border border-yellow-600/20 p-6 rounded-3xl text-center font-bold text-white tracking-widest uppercase text-lg md:text-xl shadow-[0_0_20px_rgba(255,215,0,0.1)]">
+            <div id="status" class="w-full max-w-3xl bg-black/90 border border-yellow-600/20 p-6 rounded-3xl text-center font-bold text-white tracking-widest uppercase text-lg md:text-xl shadow-[0_0_20px_rgba(255,215,0,0.1)] transition-colors duration-500">
                 ОЧІКУВАННЯ СИГНАЛУ...
             </div>
         </div>
@@ -122,15 +162,15 @@
         <div class="w-full cyber-card rounded-[30px] p-8 md:p-10 mb-10 text-center border-t-yellow-700">
             <h3 class="text-[10px] font-cyber text-yellow-600 mb-8 tracking-[0.4em] uppercase" data-i18n="donate_title">ПІДТРИМКА СЕРВЕРА ТА ЕЛЕКТРИКИ</h3>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-black/40 p-6 rounded-2xl border border-white/5 cursor-pointer hover:border-orange-500 hover:shadow-[0_0_15px_rgba(255,140,0,0.3)] transition" onclick="copy('1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2')">
+                <div class="bg-black/40 p-6 rounded-2xl border border-white/5 cursor-pointer hover-fx ui-interact" onclick="copy('1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2')">
                     <div class="flex justify-between mb-4"><span class="text-[10px] text-orange-400 font-cyber font-bold uppercase">₿ BTC (NATIVE)</span><span>📋</span></div>
                     <div class="text-[12px] text-gray-500 font-mono break-all text-left">1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2</div>
                 </div>
-                <div class="bg-black/40 p-6 rounded-2xl border border-white/5 cursor-pointer hover:border-yellow-500 hover:shadow-[0_0_15px_rgba(255,215,0,0.3)] transition" onclick="copy('0x748f510de5c5c1f89f160b6e557b464e18f09d91')">
+                <div class="bg-black/40 p-6 rounded-2xl border border-white/5 cursor-pointer hover-fx ui-interact" onclick="copy('0x748f510de5c5c1f89f160b6e557b464e18f09d91')">
                     <div class="flex justify-between mb-4"><span class="text-[10px] text-yellow-400 font-cyber font-bold uppercase">💵 USDT (BEP20)</span><span>📋</span></div>
                     <div class="text-[12px] text-gray-500 font-mono break-all text-left">0x748f510de5c5c1f89f160b6e557b464e18f09d91</div>
                 </div>
-                <div class="bg-black/40 p-6 rounded-2xl border border-white/5 cursor-pointer hover:border-green-500 hover:shadow-[0_0_15px_rgba(57,255,20,0.3)] transition" onclick="copy('TQ36w3mcrETYDqQe7tofrbn4GWtVbcuaUz')">
+                <div class="bg-black/40 p-6 rounded-2xl border border-white/5 cursor-pointer hover-fx ui-interact" onclick="copy('TQ36w3mcrETYDqQe7tofrbn4GWtVbcuaUz')">
                     <div class="flex justify-between mb-4"><span class="text-[10px] text-green-400 font-cyber font-bold uppercase">💵 USDT (TRC20)</span><span>📋</span></div>
                     <div class="text-[12px] text-gray-500 font-mono break-all text-left">TQ36w3mcrETYDqQe7tofrbn4GWtVbcuaUz</div>
                 </div>
@@ -139,71 +179,51 @@
     </div>
 
     <script>
-        new TradingView.widget({
-            "autosize": true, "symbol": "BINANCE:BTCUSDT", "interval": "5", "theme": "dark", 
-            "style": "1", "container_id": "tv_chart", "hide_top_toolbar": true, "backgroundColor": "rgba(0,0,0,0)"
+        new TradingView.widget({"autosize": true, "symbol": "BINANCE:BTCUSDT", "interval": "5", "theme": "dark", "style": "1", "container_id": "tv_chart", "hide_top_toolbar": true, "backgroundColor": "rgba(0,0,0,0)"});
+
+        // WEB AUDIO API (Синтезатор кибер-звуков)
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        let soundEnabled = false;
+
+        function playTone(freq, type, dur, vol) {
+            if(!soundEnabled) return;
+            if(audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type; osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + dur);
+        }
+
+        document.querySelectorAll('.ui-interact').forEach(el => {
+            el.addEventListener('mouseenter', () => playTone(800, 'sine', 0.05, 0.02));
+            el.addEventListener('click', () => playTone(1200, 'square', 0.1, 0.05));
         });
 
-        const dict = {
-            en: { 
-                gold: "Gold Futures", silver: "Silver Futures", oil: "Oil WTI", dxy: "USD Index",
-                panda_quote: "DON'T BUY THE MARKET TOP, AND DON'T SELL THE BOTTOM. TAKE YOUR TIME, MONEY LOVES PATIENCE.", 
-                copied: "COPIED TO CLIPBOARD!", 
-                s_BUY: "SIGNAL: LONG 🚀 | LOOK FOR A LONG ENTRY", 
-                s_SELL: "SIGNAL: SHORT 🩸 | LOOK FOR A SHORT ENTRY", 
-                s_FLAT: "EQUILIBRIUM ⚖️ | WAITING FOR BIG PLAYERS",
-                btc_label: "BITCOIN MARKET VALUE",
-                donate_title: "SUPPORT SERVER & INFRASTRUCTURE"
-            },
-            ru: { 
-                gold: "Фьючерсы Золото", silver: "Фьючерсы Серебро", oil: "Нефть WTI", dxy: "Индекс USD",
-                panda_quote: "НЕ ПОКУПАЙ НА ВЕРШИНЕ РЫНКА И НЕ ПРОДАВАЙ НА ДНЕ. НЕ ТОРОПИСЬ, ДЕНЬГИ ЛЮБЯТ ТЕРПЕНИЕ.", 
-                copied: "СКОПИРОВАНО!", 
-                s_BUY: "СИГНАЛ: ЛОНГ 🚀 | ИЩИ ТОЧКУ ВХОДА В ЛОНГ", 
-                s_SELL: "СИГНАЛ: ШОРТ 🩸 | ИЩИ ТОЧКУ ВХОДА В ШОРТ", 
-                s_FLAT: "РЫНОК В РАВНОВЕСИИ ⚖️ | ОЖИДАНИЕ КРУПНОГО ИГРОКА",
-                btc_label: "РЫНОЧНАЯ ЦЕНА БИТКОИНА",
-                donate_title: "ПОДДЕРЖКА СЕРВЕРА И ЭЛЕКТРИЧЕСТВА"
-            },
-            uk: { 
-                gold: "Ф'ючерси Золото", silver: "Ф'ючерси Срібло", oil: "Нафта WTI", dxy: "Індекс USD",
-                panda_quote: "НЕ КУПУЙ НА ВЕРШИНІ РИНКУ І НЕ ПРОДАВАЙ НА ДНІ. НЕ КВАПСЯ, ГРОШІ ЛЮБЛЯТЬ ТЕРПІННЯ.", 
-                copied: "СКОПІЙОВАНО!", 
-                s_BUY: "СИГНАЛ: ЛОНГ 🚀 | ШУКАЙ ТОЧКУ ВХОДУ В ЛОНГ", 
-                s_SELL: "СИГНАЛ: ШОРТ 🩸 | ШУКАЙ ТОЧКУ ВХОДУ В ШОРТ", 
-                s_FLAT: "РИНОК У РІВНОВАЗІ ⚖️ | ОЧІКУВАННЯ ВЕЛИКОГО ГРАВЦЯ",
-                btc_label: "РИНКОВА ЦІНА БІТКОЇНА",
-                donate_title: "ПІДТРИМКА СЕРВЕРА ТА ЕЛЕКТРИКИ"
-            }
-        };
-
-        let curLang = 'uk'; 
         const music = document.getElementById('bg-music');
-
         function toggleSound() {
+            soundEnabled = !soundEnabled;
             const btn = document.getElementById('sound-btn');
-            if (music.paused) { music.volume = 0.4; music.play(); btn.innerText = '🔊'; btn.classList.add('bg-white/10'); } 
+            if (soundEnabled) { music.volume = 0.3; music.play(); btn.innerText = '🔊'; btn.classList.add('bg-white/10'); playTone(1500, 'sine', 0.1, 0.1); } 
             else { music.pause(); btn.innerText = '🔇'; btn.classList.remove('bg-white/10'); }
         }
 
-        function copy(t) { 
-            navigator.clipboard.writeText(t); 
-            const s = document.getElementById('toast'); 
-            s.innerText = dict[curLang].copied;
-            s.classList.add('show'); 
-            setTimeout(() => s.classList.remove('show'), 2000); 
-        }
+        const dict = {
+            en: { panda_quote: "DON'T BUY THE MARKET TOP, AND DON'T SELL THE BOTTOM. TAKE YOUR TIME, MONEY LOVES PATIENCE.", copied: "COPIED TO CLIPBOARD!", s_BUY: "SIGNAL: LONG 🚀 | LOOK FOR A LONG ENTRY", s_SELL: "SIGNAL: SHORT 🩸 | LOOK FOR A SHORT ENTRY", s_FLAT: "EQUILIBRIUM ⚖️ | WAITING FOR BIG PLAYERS", btc_label: "BITCOIN MARKET VALUE", donate_title: "SUPPORT SERVER & INFRASTRUCTURE" },
+            ru: { panda_quote: "НЕ ПОКУПАЙ НА ВЕРШИНЕ РЫНКА И НЕ ПРОДАВАЙ НА ДНЕ. НЕ ТОРОПИСЬ, ДЕНЬГИ ЛЮБЯТ ТЕРПЕНИЕ.", copied: "СКОПИРОВАНО!", s_BUY: "СИГНАЛ: ЛОНГ 🚀 | ИЩИ ТОЧКУ ВХОДА В ЛОНГ", s_SELL: "СИГНАЛ: ШОРТ 🩸 | ИЩИ ТОЧКУ ВХОДА В ШОРТ", s_FLAT: "РЫНОК В РАВНОВЕСИИ ⚖️ | ОЖИДАНИЕ КРУПНОГО ИГРОКА", btc_label: "РЫНОЧНАЯ ЦЕНА БИТКОИНА", donate_title: "ПОДДЕРЖКА СЕРВЕРА И ЭЛЕКТРИЧЕСТВА" },
+            uk: { panda_quote: "НЕ КУПУЙ НА ВЕРШИНІ РИНКУ І НЕ ПРОДАВАЙ НА ДНІ. НЕ КВАПСЯ, ГРОШІ ЛЮБЛЯТЬ ТЕРПІННЯ.", copied: "СКОПІЙОВАНО!", s_BUY: "СИГНАЛ: ЛОНГ 🚀 | ШУКАЙ ТОЧКУ ВХОДУ В ЛОНГ", s_SELL: "СИГНАЛ: ШОРТ 🩸 | ШУКАЙ ТОЧКУ ВХОДУ В ШОРТ", s_FLAT: "РИНОК У РІВНОВАЗІ ⚖️ | ОЧІКУВАННЯ ВЕЛИКОГО ГРАВЦЯ", btc_label: "РИНКОВА ЦІНА БІТКОЇНА", donate_title: "ПІДТРИМКА СЕРВЕРА ТА ЕЛЕКТРИКИ" }
+        };
+
+        let curLang = 'uk'; 
+        function copy(t) { navigator.clipboard.writeText(t); const s = document.getElementById('toast'); s.innerText = dict[curLang].copied; s.classList.add('show'); setTimeout(() => s.classList.remove('show'), 2000); }
 
         function setLang(l) { 
             curLang = l; 
             document.querySelectorAll('[data-i18n]').forEach(e => e.innerText = dict[l][e.getAttribute('data-i18n')]); 
-            
             document.querySelectorAll('.lang-btn').forEach(b => {
-                if(b.getAttribute('data-lang') === l) {
-                    b.className = "lang-btn px-3 py-1 text-xs font-bold text-yellow-500 border border-yellow-500/30 rounded";
-                } else {
-                    b.className = "lang-btn px-3 py-1 text-xs text-gray-400 hover:text-white transition";
-                }
+                if(b.getAttribute('data-lang') === l) b.className = "lang-btn ui-interact px-3 py-1 text-xs font-bold text-yellow-500 border border-yellow-500/30 rounded";
+                else b.className = "lang-btn ui-interact px-3 py-1 text-xs text-gray-400 hover:text-white transition";
             });
             lastSignalUpdate();
         }
@@ -226,39 +246,65 @@
             } else {
                 document.getElementById('status').style.textShadow = "none";
             }
-            
             document.getElementById('status').innerText = sMsg;
+        }
+
+        // NET SPREAD RADAR (BINANCE VS COINBASE)
+        async function fetchSpread() {
+            try {
+                const [binRes, cbRes] = await Promise.all([
+                    fetch('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT'),
+                    fetch('https://api.coinbase.com/v2/prices/BTC-USD/spot')
+                ]);
+                const binData = await binRes.json();
+                const cbData = await cbRes.json();
+                
+                const binPrice = parseFloat(binData.price);
+                const cbPrice = parseFloat(cbData.data.amount);
+                const delta = Math.abs(binPrice - cbPrice);
+
+                document.getElementById('spread-binance').innerText = binPrice.toFixed(1);
+                document.getElementById('spread-coinbase').innerText = cbPrice.toFixed(1);
+                document.getElementById('spread-delta').innerText = delta.toFixed(1);
+
+                if (delta > 15) {
+                    document.getElementById('spread-box').style.textShadow = "0 0 15px var(--br-orange)";
+                    document.getElementById('spread-delta').style.color = "var(--br-orange)";
+                } else {
+                    document.getElementById('spread-box').style.textShadow = "none";
+                    document.getElementById('spread-delta').style.color = "#fff";
+                }
+            } catch(e) {}
         }
 
         async function sync() {
             try {
-                const res = await fetch('/api/pulse'); 
-                const data = await res.json();
-                
+                const res = await fetch('/api/pulse'); const data = await res.json();
                 document.getElementById('sleep-overlay').style.display = data.is_sleeping ? 'flex' : 'none';
-                
-                // Обновление Одометра и Макро-виджетов из данных бота
                 document.getElementById('btc-val').innerHTML = Math.floor(data.btc_price);
-                document.getElementById('gold-val').innerText = data.gold_price.toFixed(2);
-                document.getElementById('silver-val').innerText = data.silver_price.toFixed(2);
-                document.getElementById('oil-val').innerText = data.oil_price.toFixed(2);
-                document.getElementById('dxy-val').innerText = data.dxy_index.toFixed(2);
+
+                if (currentSignalCache !== data.signal && data.signal !== 'WAIT') {
+                    // GLITCH & ALERT SOUND
+                    document.body.classList.add('glitch-fx');
+                    setTimeout(() => document.body.classList.remove('glitch-fx'), 300);
+                    playTone(150, 'sawtooth', 0.4, 0.1);
+                }
 
                 document.querySelectorAll('.light').forEach(l => l.classList.remove('active'));
                 currentSignalCache = data.signal;
 
-                if(data.signal === 'SELL') { document.getElementById('l-red').classList.add('active'); }
-                else if(data.signal === 'BUY') { document.getElementById('l-green').classList.add('active'); }
-                else { document.getElementById('l-yellow').classList.add('active'); }
+                if(data.signal === 'SELL') document.getElementById('l-red').classList.add('active');
+                else if(data.signal === 'BUY') document.getElementById('l-green').classList.add('active');
+                else document.getElementById('l-yellow').classList.add('active');
                 
                 lastSignalUpdate();
-
             } catch(e){}
         }
         
         setLang('uk');
         setInterval(sync, 3000); 
-        sync();
+        setInterval(fetchSpread, 2000);
+        sync(); fetchSpread();
     </script>
 </body>
 </html>
