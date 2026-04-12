@@ -1,80 +1,69 @@
-from flask import Flask, render_template, jsonify
-import random
+from flask import Flask, render_template, jsonify, request
+import pandas as pd
 import time
+import os
+import random
 
 app = Flask(__name__)
 
-# Поточні "фейкові" дані для верхньої панелі та світлофора
-current_market_data = {
-    "btc_price": 71050.00,
-    "gold_price": 2340.50,
-    "silver_price": 28.15,
-    "oil_price": 82.40,
-    "dxy_index": 104.20,
-    "signal": "WAIT",     # BUY, SELL, WAIT
-    "status_code": "FLAT" # SYNC, BUY, SELL, FLAT, OFFLINE
-}
-
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-@app.route('/api/pulse')
-def pulse():
-    """Пульс системи: оновлює верхні віджети та велику ціну BTC кожні 2 секунди"""
-    # Імітація живого ринку
-    current_market_data["btc_price"] += random.uniform(-10, 10)
-    
-    # Випадковий сигнал для світлофора
-    rand_sig = random.random()
-    if rand_sig > 0.9:
-        current_market_data["signal"] = "BUY"
-        current_market_data["status_code"] = "BUY"
-    elif rand_sig < 0.1:
-        current_market_data["signal"] = "SELL"
-        current_market_data["status_code"] = "SELL"
-    else:
-        current_market_data["signal"] = "WAIT"
-        current_market_data["status_code"] = "FLAT"
-
-    return jsonify(current_market_data)
+# ... (тут залишається твій код для START_BALANCES та /api/pulse) ...
 
 @app.route('/api/chart_data')
 def chart_data():
     """
-    Дані для побудови графіка Lightweight Charts.
-    ТУТ ТИ БУДЕШ ЧИТАТИ СВІЙ EXCEL (через pandas).
-    Поки генеруємо 60 останніх свічок.
+    Читає реальні дані з твого CSV файлу та віддає їх на графік.
     """
-    data = []
-    current_time = int(time.time()) - (60 * 15 * 60) # Імітація 15-хвилинного таймфрейму
-    base_price = 70000
+    file_name = "ORCAS_PULSE_LOG.xlsx - Макро Пульс 5м.csv"
+    
+    # Перевіряємо, чи існує файл у папці
+    if not os.path.exists(file_name):
+        print(f"⚠️ УВАГА: Файл {file_name} не знайдено!")
+        return jsonify([]) # Повертаємо порожній масив, щоб графік не зламався
 
-    for i in range(60):
-        open_p = base_price + random.uniform(-50, 50)
-        close_p = open_p + random.uniform(-150, 150)
-        high_p = max(open_p, close_p) + random.uniform(0, 100)
-        low_p = min(open_p, close_p) - random.uniform(0, 100)
-        base_price = close_p
+    try:
+        # Читаємо CSV файл
+        df = pd.read_csv(file_name)
+
+        # ==========================================
+        # ❗️ КІБЕР-НАЛАШТУВАННЯ (ЗВЕРНИ УВАГУ) ❗️
+        # Тут вказані назви колонок. Якщо у твоєму файлі вони 
+        # називаються інакше (наприклад, 'Цена Закрытия' замість 'Close'), 
+        # просто поміняй їх тут у дужках:
+        # ==========================================
+        col_time = 'Time'    # Колонка з часом (наприклад: 2024-05-12 15:30:00)
+        col_open = 'Open'    # Ціна відкриття
+        col_high = 'High'    # Максимальна ціна
+        col_low = 'Low'      # Мінімальна ціна
+        col_close = 'Close'  # Ціна закриття
+        col_signal = 'Signal'# Сигнал (повинен містити текст BUY, SELL або WAIT)
         
-        # Імітація твоїх історичних сигналів з Excel
-        signal = "WAIT"
-        rand_val = random.random()
-        if rand_val > 0.85:
-            signal = "BUY"
-        elif rand_val < 0.15:
-            signal = "SELL"
+        # Графік Lightweight Charts розуміє тільки Unix Time (секунди).
+        # Цей рядок автоматично перетворює звичайний час з Екселю в секунди:
+        df['UnixTime'] = pd.to_datetime(df[col_time]).astype('int64') // 10**9
 
-        data.append({
-            "time": current_time + (i * 15 * 60),
-            "open": round(open_p, 2),
-            "high": round(high_p, 2),
-            "low": round(low_p, 2),
-            "close": round(close_p, 2),
-            "signal": signal
-        })
+        data = []
+        # Проходимося по кожному рядку твого файлу
+        for index, row in df.iterrows():
+            
+            # Читаємо сигнал. Якщо клітинка порожня, ставимо 'WAIT'
+            raw_signal = str(row.get(col_signal, 'WAIT')).upper().strip()
+            if raw_signal not in ['BUY', 'SELL']:
+                raw_signal = 'WAIT'
+
+            data.append({
+                "time": int(row['UnixTime']),
+                "open": float(row[col_open]),
+                "high": float(row[col_high]),
+                "low": float(row[col_low]),
+                "close": float(row[col_close]),
+                "signal": raw_signal
+            })
+            
+        print(f"✅ Успішно завантажено {len(data)} свічок з Екселю!")
+        return jsonify(data)
         
-    return jsonify(data)
+    except Exception as e:
+        print(f"❌ Помилка обробки файлу: {e}")
+        return jsonify([])
 
-if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+# ... (решта коду main.py) ...
