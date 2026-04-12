@@ -1,19 +1,18 @@
 from flask import Flask, render_template, jsonify, request
+import time
 
 app = Flask(__name__)
 
-# Повне сховище для всіх даних
+# Память сервера
 store = {
     "pulse": {
         "btc_price": 0,
-        "gold_price": 2340.50,
-        "silver_price": 28.15,
-        "oil_price": 82.40,
-        "dxy_index": 104.20,
+        "funding": 0,
+        "spot_pct": 0,
+        "spot_dir": "WAIT",
         "signal": "WAIT",
-        "status_code": "SYNC"
-    },
-    "chart": []
+        "last_update": 0  # Метка времени для спящей панды
+    }
 }
 
 @app.route('/')
@@ -23,23 +22,17 @@ def index():
 @app.route('/api/update', methods=['POST'])
 def update():
     data = request.json
-    if data:
-        # Оновлюємо пульс (ціни ф'ючерсів + сигнал)
-        if "pulse" in data:
-            store["pulse"].update(data["pulse"])
-        # Оновлюємо історію графіка
-        if "chart" in data:
-            store["chart"] = data["chart"]
+    if data and "pulse" in data:
+        store["pulse"] = data["pulse"]
+        store["pulse"]["last_update"] = time.time()
         return {"status": "ok"}, 200
     return {"status": "error"}, 400
 
 @app.route('/api/pulse')
 def get_pulse():
-    return jsonify(store["pulse"])
-
-@app.route('/api/chart_data')
-def get_chart():
-    return jsonify(store["chart"])
+    # Проверяем, не заснул ли бот (больше 2 минут тишины)
+    is_sleeping = (time.time() - store["pulse"]["last_update"]) > 120
+    return jsonify({**store["pulse"], "is_sleeping": is_sleeping})
 
 if __name__ == '__main__':
     app.run(debug=True)
