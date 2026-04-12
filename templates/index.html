@@ -3,274 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+    <meta name="google-site-verification" content="_KwUSSjTUf9_a7zKBkQk0zJrEm_IGE9HJupji9CiMOw" />
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐼</text></svg>">
-    <title>PANDA_SENTINEL | Premium Crypto Terminal</title>
-    
+    <title>PANDA_SENTINEL | Weekly Pulse</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700;900&display=swap" rel="stylesheet">
-    
     <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
-    
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     <style>
-        :root { 
-            --br-gold: #ffd700; --br-orange: #ff8c00; --br-dark-gold: #b8860b;
-            --br-green: #39ff14; --br-red: #ff003c; --br-cyan: #04d9ff; --br-yellow: #faff00;
-        }
-        
-        body { 
-            background-color: #050508;
-            background-image: radial-gradient(circle at 50% 50%, rgba(10, 10, 15, 0.9) 0%, rgba(5, 5, 8, 1) 100%);
-            color: #fff; font-family: 'Rajdhani', sans-serif; overflow-x: hidden; 
-        }
-        
-        .scanlines {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
-            background-size: 100% 4px; z-index: -1; pointer-events: none;
-        }
-
+        :root { --br-gold: #ffd700; --br-green: #39ff14; --br-red: #ff003c; }
+        body { background: #050508; color: #fff; font-family: 'Rajdhani', sans-serif; }
+        .cyber-card { background: rgba(15, 15, 20, 0.9); border: 1px solid rgba(255, 215, 0, 0.2); border-top: 3px solid var(--br-gold); }
+        .light { width: 60px; height: 60px; border-radius: 50%; filter: brightness(0.2); border: 3px solid #111; transition: 0.3s; }
+        .light.active { filter: brightness(1.5); box-shadow: 0 0 30px currentColor; border-color: currentColor; }
         .font-cyber { font-family: 'Orbitron', sans-serif; }
-        
-        .cyber-card { 
-            background: rgba(15, 15, 20, 0.85); backdrop-filter: blur(8px); 
-            border: 1px solid rgba(255, 215, 0, 0.15); border-top: 3px solid var(--br-gold); 
-            box-shadow: 0 10px 40px rgba(0,0,0,0.9); transition: all 0.4s ease;
-        }
-        
-        .lang-btn, .sound-btn { 
-            background: rgba(0,0,0,0.7); border: 1px solid rgba(255, 215, 0, 0.3); 
-            color: #888; padding: 6px 12px; border-radius: 6px; font-size: 12px; 
-            font-weight: bold; cursor: pointer; transition: all 0.3s ease; 
-        }
-        .lang-btn.active, .sound-btn.active { 
-            background: rgba(255, 215, 0, 0.15); color: var(--br-gold); 
-            border-color: var(--br-gold); box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
-        }
-        
-        @keyframes neonPulse {
-            0% { text-shadow: 0 0 10px var(--br-dark-gold), 0 0 20px var(--br-orange); }
-            50% { text-shadow: 0 0 20px var(--br-gold), 0 0 40px var(--br-orange), 0 0 60px var(--br-red); }
-            100% { text-shadow: 0 0 10px var(--br-dark-gold), 0 0 20px var(--br-orange); }
-        }
-        .text-neon { animation: neonPulse 3s infinite alternate; }
-
-        .light { width: 70px; height: 70px; border-radius: 50%; filter: brightness(0.15); border: 4px solid #111; transition: 0.4s; }
-        .light.active { filter: brightness(1.8); box-shadow: 0 0 40px currentColor, inset 0 0 20px currentColor; border-color: currentColor; }
-
-        .sleeping-panda { font-size: 140px; animation: breathe 4s infinite ease-in-out; }
-        @keyframes breathe { 0%, 100% { transform: scale(1); filter: opacity(0.5); } 50% { transform: scale(1.05); filter: opacity(0.9); text-shadow: 0 0 30px var(--br-cyan); } }
-        
-        .hidden { display: none !important; }
-        
-        .terminal-log-container {
-            background: rgba(5, 5, 8, 0.9); border: 1px solid var(--br-green);
-            box-shadow: inset 0 0 15px rgba(57, 255, 20, 0.1);
-            font-family: monospace; color: var(--br-green); font-size: 13px;
-            height: 100px; overflow: hidden; position: relative;
-        }
-        .terminal-line { margin-bottom: 4px; opacity: 0.9; text-shadow: 0 0 5px var(--br-green); }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center p-6" id="app-body">
-    
-    <div class="scanlines"></div>
-
-    <header class="w-full max-w-6xl flex justify-between items-center mb-8 z-10 mt-4">
-        <h1 class="font-cyber text-4xl font-black text-white text-neon">
-            PANDA_<span style="color: var(--br-gold);">SENTINEL</span>
-        </h1>
-        <div class="flex gap-2 bg-black/80 p-2 rounded-lg border border-yellow-600/30 backdrop-blur-md">
-            <button id="sound-btn" class="sound-btn active text-lg" onclick="toggleSound()">🔊</button>
-            <div class="w-px bg-yellow-600/30 mx-1"></div>
-            <button class="lang-btn active" data-lang="en" onclick="setLang('en')">ENG</button>
-            <button class="lang-btn" data-lang="ru" onclick="setLang('ru')">RUS</button>
-            <button class="lang-btn" data-lang="uk" onclick="setLang('uk')">UKR</button>
+<body class="p-4 flex flex-col items-center">
+    <header class="w-full max-w-5xl flex justify-between items-center py-6">
+        <h1 class="font-cyber text-3xl text-white">PANDA_<span style="color:var(--br-gold)">SENTINEL</span></h1>
+        <div class="flex gap-2">
+            <button class="bg-black border border-yellow-600/40 px-3 py-1 text-xs rounded text-yellow-500">ENG</button>
+            <button class="bg-black border border-yellow-600/40 px-3 py-1 text-xs rounded text-gray-500">RUS</button>
+            <button class="bg-black border border-yellow-600/40 px-3 py-1 text-xs rounded text-gray-500">UKR</button>
         </div>
     </header>
 
-    <div id="main-ui" class="w-full max-w-6xl flex flex-col items-center">
-        <main class="w-full grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 z-10">
-            <div class="cyber-card p-5 rounded-xl border-t-yellow-400">
-                <div class="text-[11px] uppercase text-gray-400 font-cyber font-bold tracking-widest" data-i18n="gold">Ф'ючерси Золото</div>
-                <div id="gold-val" class="text-3xl font-cyber text-yellow-400 mt-1">0.00</div>
-            </div>
-            <div class="cyber-card p-5 rounded-xl border-t-gray-300">
-                <div class="text-[11px] uppercase text-gray-400 font-cyber font-bold tracking-widest" data-i18n="silver">Ф'ючерси Срібло</div>
-                <div id="silver-val" class="text-3xl font-cyber text-gray-200 mt-1">0.00</div>
-            </div>
-            <div class="cyber-card p-5 rounded-xl border-t-orange-500">
-                <div class="text-[11px] uppercase text-gray-400 font-cyber font-bold tracking-widest" data-i18n="oil">Нафта WTI</div>
-                <div id="oil-val" class="text-3xl font-cyber text-orange-500 mt-1">0.00</div>
-            </div>
-            <div class="cyber-card p-5 rounded-xl border-t-cyan-500">
-                <div class="text-[11px] uppercase text-gray-400 font-cyber font-bold tracking-widest" data-i18n="dxy">Індекс USD</div>
-                <div id="dxy-val" class="text-3xl font-cyber text-cyan-400 mt-1">0.00</div>
-            </div>
-        </main>
+    <div class="w-full max-w-5xl cyber-card rounded-3xl p-6 flex flex-col items-center">
+        <div id="chart-box" class="w-full h-80 rounded-xl overflow-hidden mb-6 border border-white/5"></div>
+        
+        <div class="text-cyan-400 font-cyber text-sm tracking-widest mb-2">BITCOIN WEEKLY LOG</div>
+        <div id="btc-price" class="font-cyber text-6xl md:text-7xl mb-8">$0</div>
 
-        <div class="w-full cyber-card rounded-[40px] p-8 md:p-12 flex flex-col items-center z-10">
-            
-            <div class="w-full h-80 mb-8 rounded-2xl overflow-hidden border border-yellow-600/30 relative">
-                <div id="cyber-chart" class="absolute top-0 left-0 w-full h-full"></div>
-            </div>
-
-            <div class="text-lg md:text-2xl uppercase text-cyan-400 font-cyber font-bold tracking-widest mb-1 text-neon" data-i18n="btc_label">BITCOIN (BINANCE)</div>
-            <div id="btc-val" class="font-cyber text-6xl md:text-8xl font-black mb-8 text-white text-neon">0</div>
-            
-            <div class="flex gap-12 mb-8 bg-black/90 p-8 rounded-[40px] border border-gray-800 shadow-2xl">
-                <div id="light-sell" class="light" style="color: var(--br-red)"></div>
-                <div id="light-wait" class="light" style="color: var(--br-yellow)"></div>
-                <div id="light-buy" class="light" style="color: var(--br-green)"></div>
-            </div>
-            
-            <div id="status-text" class="w-full bg-black/80 border border-yellow-600/30 p-6 rounded-3xl text-2xl text-center font-bold text-gray-200 tracking-wider">СИНХРОНІЗАЦІЯ...</div>
-            
-            <div class="w-full mt-8 terminal-log-container p-4 rounded-xl flex flex-col justify-end" id="terminal-log"></div>
+        <div class="flex gap-10 mb-8 bg-black/50 p-6 rounded-full border border-white/5">
+            <div id="l-red" class="light" style="color:var(--br-red)"></div>
+            <div id="l-yellow" class="light" style="color:#ffd700"></div>
+            <div id="l-green" class="light" style="color:var(--br-green)"></div>
         </div>
-    </div>
-
-    <div id="offline-ui" class="w-full max-w-6xl cyber-card rounded-[40px] p-16 flex flex-col items-center z-10 text-center hidden border-t-yellow-500 mt-10">
-        <div class="sleeping-panda mb-8">🐼💤</div>
-        <h2 class="text-4xl md:text-5xl font-bold text-yellow-500 mb-6 font-cyber tracking-widest text-neon" data-i18n="off_t">СИСТЕМА СПИТЬ</h2>
-        <p class="text-xl md:text-2xl text-gray-300 leading-relaxed max-w-3xl border-t border-gray-800 pt-6 mb-8" data-i18n="off_m">
-            Ми спимо через те, що у нас відсутній інтернет або електроенергія. Це нормальна ситуація для нашого регіону. Ми повернемося, як тільки з'явиться зв'язок!
-        </p>
+        <div id="status" class="w-full bg-black/40 p-4 rounded-xl text-center text-xl font-bold tracking-widest border border-yellow-600/20">CONNECTING...</div>
     </div>
 
     <script>
-        const dict = {
-            en: { 
-                gold: "Gold Futures", silver: "Silver Futures", oil: "Oil WTI", dxy: "USD Index", btc_label: "BITCOIN (BINANCE)",
-                off_t: "SYSTEM ASLEEP", off_m: "We are offline due to power or internet outages in our region. We will be back soon!", 
-                status_SYNC: "SYNCING...", status_BUY: "PREPARE TO BUY 🟢", status_SELL: "PREPARE TO SELL 🔴", status_FLAT: "MARKET IN BALANCE...",
-                log_buy: "ANOMALOUS VOLUME. SQUEEZE PROBABLE.", log_sell: "ANOMALOUS VOLUME. CORRECTION RISK.", log_wait: "RADAR NORMAL."
-            },
-            ru: { 
-                gold: "Фьючерсы Золото", silver: "Фьючерсы Серебро", oil: "Нефть WTI", dxy: "Индекс USD", btc_label: "БИТКОИН (BINANCE)",
-                off_t: "СИСТЕМА СПИТ", off_m: "Мы оффлайн из-за отсутствия интернета или электричества в нашем регионе. Скоро вернемся!", 
-                status_SYNC: "СИНХРОНИЗАЦИЯ...", status_BUY: "ГОТОВЬСЯ К ПОКУПКЕ 🟢", status_SELL: "ГОТОВЬСЯ К ПРОДАЖЕ 🔴", status_FLAT: "РЫНОК В РАВНОВЕСИИ...",
-                log_buy: "АНОМАЛЬНЫЙ ОБЪЕМ. ВОЗМОЖЕН СКВИЗ.", log_sell: "АНОМАЛЬНЫЙ ОБЪЕМ. РИСК КОРРЕКЦИИ.", log_wait: "РАДАР В НОРМЕ."
-            },
-            uk: { 
-                gold: "Ф'ючерси Золото", silver: "Ф'ючерси Срібло", oil: "Нафта WTI", dxy: "Індекс USD", btc_label: "БІТКОЇН (BINANCE)",
-                off_t: "СИСТЕМА СПИТЬ", off_m: "Ми спимо через відсутність інтернету або електроенергії в нашому регіоні. Скоро повернемося!", 
-                status_SYNC: "СИНХРОНІЗАЦІЯ...", status_BUY: "ГОТУЙСЯ ДО ПОКУПКИ 🟢", status_SELL: "ГОТУЙСЯ ДО ПРОДАЖУ 🔴", status_FLAT: "РИНОК У РІВНОВАЗІ...",
-                log_buy: "АНОМАЛЬНИЙ ОБ'ЄМ. МОЖЛИВИЙ СКВІЗ.", log_sell: "АНОМАЛЬНЫЙ ОБ'ЄМ. РИЗИК КОРЕКЦІЇ.", log_wait: "РАДАР У НОРМІ."
-            }
-        };
+        // Ініціалізація графіка
+        const chart = LightweightCharts.createChart(document.getElementById('chart-box'), {
+            layout: { background: { color: '#0a0a0f' }, textColor: '#888' },
+            grid: { vertLines: { visible: false }, horzLines: { color: '#1a1a25' } },
+            timeScale: { borderColor: '#222' }
+        });
+        const candles = chart.addCandlestickSeries({ upColor: '#39ff14', downColor: '#ff003c', borderVisible: false });
 
-        let currentLang = 'en'; 
-        let currentStatusCode = "SYNC";
-        let isSoundEnabled = true;
-        let terminalLogs = [];
-
-        function toggleSound() {
-            isSoundEnabled = !isSoundEnabled;
-            document.getElementById('sound-btn').innerText = isSoundEnabled ? '🔊' : '🔇';
-            document.getElementById('sound-btn').classList.toggle('active', isSoundEnabled);
-        }
-
-        function setLang(lang) {
-            currentLang = lang;
-            document.querySelectorAll('.lang-btn').forEach(b => { b.classList.toggle('active', b.getAttribute('data-lang') === lang); });
-            document.querySelectorAll('[data-i18n]').forEach(el => { el.innerText = dict[lang][el.getAttribute('data-i18n')]; });
-            document.getElementById('status-text').innerText = dict[currentLang]["status_" + currentStatusCode];
-        }
-
-        function addTerminalLog(msgKey) {
-            const time = new Date().toLocaleTimeString();
-            terminalLogs.push({ time: time, key: msgKey });
-            if (terminalLogs.length > 4) terminalLogs.shift();
-            
-            const logBox = document.getElementById('terminal-log'); logBox.innerHTML = '';
-            terminalLogs.forEach(log => {
-                const div = document.createElement('div'); div.className = "terminal-line";
-                div.innerText = `> [${log.time}] ${dict[currentLang][log.key]}`;
-                logBox.appendChild(div);
-            });
-        }
-
-        const chartProperties = {
-            layout: { background: { type: 'solid', color: 'rgba(10, 10, 15, 1)' }, textColor: '#d1d4dc' },
-            grid: { vertLines: { color: 'rgba(255, 215, 0, 0.05)' }, horzLines: { color: 'rgba(255, 215, 0, 0.05)' } },
-            timeScale: { timeVisible: true, secondsVisible: false }
-        };
-        const chartContainer = document.getElementById('cyber-chart');
-        const cyberChart = LightweightCharts.createChart(chartContainer, chartProperties);
-        const candleSeries = cyberChart.addCandlestickSeries({ borderVisible: false });
-
-        async function loadChartData() {
+        async function sync() {
             try {
-                const res = await fetch('/api/chart_data');
-                const rawData = await res.json();
-                let chartData = []; let markers = [];
-
-                rawData.forEach(item => {
-                    let colorOptions = { color: 'rgba(255, 215, 0, 0.3)', wickColor: 'rgba(255, 215, 0, 0.3)' }; 
-
-                    if (item.signal === 'BUY') {
-                        colorOptions = { color: '#39ff14', wickColor: '#39ff14' };
-                        markers.push({ time: item.time, position: 'belowBar', color: '#39ff14', shape: 'arrowUp', text: 'BUY', size: 2 });
-                    } else if (item.signal === 'SELL') {
-                        colorOptions = { color: '#ff003c', wickColor: '#ff003c' };
-                        markers.push({ time: item.time, position: 'aboveBar', color: '#ff003c', shape: 'arrowDown', text: 'SELL', size: 2 });
-                    }
-
-                    chartData.push({
-                        time: item.time, open: item.open, high: item.high, low: item.low, close: item.close,
-                        color: colorOptions.color, borderColor: colorOptions.color, wickColor: colorOptions.wickColor
-                    });
-                });
-                candleSeries.setData(chartData);
-                candleSeries.setMarkers(markers);
-                cyberChart.timeScale().fitContent();
-            } catch (error) {
-                console.error("Chart load failed:", error);
-            }
-        }
-
-        async function updatePulse() {
-            try {
-                const res = await fetch('/api/pulse'); 
-                const data = await res.json();
+                // Пульс
+                const pRes = await fetch('/api/pulse'); const p = await pRes.json();
+                document.getElementById('btc-price').innerText = '$' + Math.floor(p.btc_price).toLocaleString();
+                document.getElementById('status').innerText = p.status_code + '...';
                 
-                if (data.status_code === "OFFLINE") {
-                    document.getElementById('main-ui').classList.add('hidden');
-                    document.getElementById('offline-ui').classList.remove('hidden');
-                } else {
-                    document.getElementById('main-ui').classList.remove('hidden');
-                    document.getElementById('offline-ui').classList.add('hidden');
-                    
-                    document.getElementById('btc-val').innerText = '$' + Math.floor(data.btc_price).toLocaleString();
-                    document.getElementById('gold-val').innerText = '$' + data.gold_price.toFixed(2);
-                    document.getElementById('silver-val').innerText = '$' + data.silver_price.toFixed(2);
-                    document.getElementById('oil-val').innerText = '$' + data.oil_price.toFixed(2);
-                    document.getElementById('dxy-val').innerText = data.dxy_index.toFixed(2);
-                    
-                    currentStatusCode = data.status_code;
-                    document.getElementById('status-text').innerText = dict[currentLang]["status_" + currentStatusCode];
-                    
-                    document.querySelectorAll('.light').forEach(l => l.classList.remove('active'));
-                    if (data.signal === 'BUY') {
-                        document.getElementById('light-buy').classList.add('active'); 
-                        addTerminalLog('log_buy');
-                    } else if (data.signal === 'SELL') {
-                        document.getElementById('light-sell').classList.add('active'); 
-                        addTerminalLog('log_sell');
-                    } else {
-                        document.getElementById('light-wait').classList.add('active'); 
-                        addTerminalLog('log_wait');
-                    }
-                }
-            } catch (e) {}
-        }
+                document.querySelectorAll('.light').forEach(l => l.classList.remove('active'));
+                if(p.signal === 'BUY') document.getElementById('l-green').classList.add('active');
+                else if(p.signal === 'SELL') document.getElementById('l-red').classList.add('active');
+                else document.getElementById('l-yellow').classList.add('active');
 
-        setLang('en');
-        loadChartData(); 
-        setInterval(updatePulse, 3000); // Оновлюємо кожні 3 секунди
-        
-        window.addEventListener('resize', () => { cyberChart.applyOptions({ width: chartContainer.clientWidth, height: chartContainer.clientHeight }); });
+                // Графік
+                const cRes = await fetch('/api/chart_data'); const cData = await cRes.json();
+                if(cData.length > 0) {
+                    candles.setData(cData.map(d => ({...d})));
+                    const markers = cData.filter(d => d.signal !== 'WAIT').map(d => ({
+                        time: d.time, position: d.signal === 'BUY' ? 'belowBar' : 'aboveBar',
+                        color: d.signal === 'BUY' ? '#39ff14' : '#ff003c', shape: d.signal === 'BUY' ? 'arrowUp' : 'arrowDown',
+                        text: d.signal
+                    }));
+                    candles.setMarkers(markers);
+                }
+            } catch(e) {}
+        }
+        setInterval(sync, 5000); sync();
     </script>
 </body>
 </html>
