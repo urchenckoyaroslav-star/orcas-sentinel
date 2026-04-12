@@ -2,9 +2,17 @@ from flask import Flask, render_template, jsonify, request
 
 app = Flask(__name__)
 
-# Сховище в пам'яті
+# Повне сховище для всіх даних
 store = {
-    "pulse": {"btc_price": 0, "signal": "WAIT", "status_code": "SYNC"},
+    "pulse": {
+        "btc_price": 0,
+        "gold_price": 2340.50,
+        "silver_price": 28.15,
+        "oil_price": 82.40,
+        "dxy_index": 104.20,
+        "signal": "WAIT",
+        "status_code": "SYNC"
+    },
     "chart": []
 }
 
@@ -16,8 +24,12 @@ def index():
 def update():
     data = request.json
     if data:
-        store["pulse"] = data.get("pulse", store["pulse"])
-        store["chart"] = data.get("chart", store["chart"])
+        # Оновлюємо пульс (ціни ф'ючерсів + сигнал)
+        if "pulse" in data:
+            store["pulse"].update(data["pulse"])
+        # Оновлюємо історію графіка
+        if "chart" in data:
+            store["chart"] = data["chart"]
         return {"status": "ok"}, 200
     return {"status": "error"}, 400
 
