@@ -36,11 +36,18 @@
 
         .font-cyber { font-family: 'Orbitron', sans-serif; }
 
+        /* АНИМАЦИЯ И ВЗАИМОДЕЙСТВИЕ КАРТОЧЕК */
         .cyber-card { 
             background: rgba(5, 7, 10, 0.8); backdrop-filter: blur(12px); 
             border: 1px solid rgba(4, 217, 255, 0.2); border-top: 3px solid var(--br-teal);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.8); 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8); transition: all 0.3s ease; 
         }
+        .cyber-card:hover { transform: translateY(-2px); box-shadow: 0 15px 45px rgba(4, 217, 255, 0.15); }
+        .cyber-card.hover-fx:hover { border-color: var(--br-orange); transform: translateY(-3px); box-shadow: 0 20px 50px rgba(255, 140, 0, 0.2); }
+        
+        /* ПРУЖИНИСТЫЙ КЛИК ДЛЯ ВСЕХ UI ЭЛЕМЕНТОВ */
+        .ui-interact { transition: all 0.2s ease; }
+        .ui-interact:active { transform: scale(0.96) !important; }
 
         .lang-btn {
             background: rgba(0,0,0,0.5); border: 1px solid rgba(4, 217, 255, 0.3);
@@ -75,6 +82,13 @@
             box-shadow: 0 0 15px rgba(4, 217, 255, 0.2); transition: all 0.3s ease; position: relative; overflow: hidden;
         }
         .tg-btn:hover { background: linear-gradient(45deg, var(--br-teal), #000); color: #fff; box-shadow: 0 0 30px rgba(4, 217, 255, 0.6); transform: scale(1.02); }
+        
+        /* Класс успешного копирования для карточки */
+        .copied-success {
+            border-color: var(--br-green) !important;
+            box-shadow: 0 0 20px rgba(57, 255, 20, 0.5) !important;
+            background: rgba(57, 255, 20, 0.1) !important;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-6" id="app-body">
@@ -94,16 +108,16 @@
         </p>
         
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-4xl px-4 mb-10">
-            <div class="bg-black/60 p-5 rounded-2xl border border-teal-500/30 cursor-pointer hover:border-orange-500 transition shadow-lg ui-interact" onclick="copyCrypto('1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2')">
-                <div class="flex justify-between mb-2"><span class="text-[11px] text-orange-400 font-cyber font-bold uppercase">₿ BTC (NATIVE)</span><span>📋</span></div>
+            <div class="bg-black/60 p-5 rounded-2xl border border-teal-500/30 cursor-pointer hover:border-orange-500 transition shadow-lg ui-interact" onclick="copyCrypto('1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2', this)">
+                <div class="flex justify-between mb-2"><span class="text-[11px] text-orange-400 font-cyber font-bold uppercase">₿ BTC (NATIVE)</span><span class="icon-slot">📋</span></div>
                 <div class="text-[12px] text-gray-300 font-mono break-all text-left">1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2</div>
             </div>
-            <div class="bg-black/60 p-5 rounded-2xl border border-teal-500/30 cursor-pointer hover:border-yellow-500 transition shadow-lg ui-interact" onclick="copyCrypto('0x748f510de5c5c1f89f160b6e557b464e18f09d91')">
-                <div class="flex justify-between mb-2"><span class="text-[11px] text-yellow-400 font-cyber font-bold uppercase">💵 USDT (BEP20)</span><span>📋</span></div>
+            <div class="bg-black/60 p-5 rounded-2xl border border-teal-500/30 cursor-pointer hover:border-yellow-500 transition shadow-lg ui-interact" onclick="copyCrypto('0x748f510de5c5c1f89f160b6e557b464e18f09d91', this)">
+                <div class="flex justify-between mb-2"><span class="text-[11px] text-yellow-400 font-cyber font-bold uppercase">💵 USDT (BEP20)</span><span class="icon-slot">📋</span></div>
                 <div class="text-[12px] text-gray-300 font-mono break-all text-left">0x748f510de5c5c1f89f160b6e557b464e18f09d91</div>
             </div>
-            <div class="bg-black/60 p-5 rounded-2xl border border-teal-500/30 cursor-pointer hover:border-green-500 transition shadow-lg ui-interact" onclick="copyCrypto('TQ36w3mcrETYDqQe7tofrbn4GWtVbcuaUz')">
-                <div class="flex justify-between mb-2"><span class="text-[11px] text-green-400 font-cyber font-bold uppercase">💵 USDT (TRC20)</span><span>📋</span></div>
+            <div class="bg-black/60 p-5 rounded-2xl border border-teal-500/30 cursor-pointer hover:border-green-500 transition shadow-lg ui-interact" onclick="copyCrypto('TQ36w3mcrETYDqQe7tofrbn4GWtVbcuaUz', this)">
+                <div class="flex justify-between mb-2"><span class="text-[11px] text-green-400 font-cyber font-bold uppercase">💵 USDT (TRC20)</span><span class="icon-slot">📋</span></div>
                 <div class="text-[12px] text-gray-300 font-mono break-all text-left">TQ36w3mcrETYDqQe7tofrbn4GWtVbcuaUz</div>
             </div>
         </div>
@@ -177,28 +191,28 @@
         <div class="w-full max-w-3xl grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
             <a href="https://t.me/TyShoPredictor_bot" target="_blank" class="tg-btn ui-interact py-5 rounded-2xl flex flex-col items-center justify-center text-center font-cyber">
                 <span class="text-3xl mb-2">🤖</span>
-                <span class="font-bold tracking-widest uppercase text-sm" data-i18n="btn_bot">КРИПТО БОТ (@TyShoPredictor_bot)</span>
+                <span class="font-bold tracking-widest uppercase" data-i18n="btn_bot">КРИПТО БОТ</span>
             </a>
             <a href="https://t.me/AlnairCanopus" target="_blank" class="tg-btn ui-interact py-5 rounded-2xl flex flex-col items-center justify-center text-center font-cyber">
                 <span class="text-3xl mb-2">✉️</span>
-                <span class="font-bold tracking-widest uppercase text-sm" data-i18n="btn_author">НАПИСАТИ АВТОРУ (@AlnairCanopus)</span>
+                <span class="font-bold tracking-widest uppercase" data-i18n="btn_author">НАПИСАТИ АВТОРУ</span>
             </a>
         </div>
 
         <div class="w-full cyber-card rounded-[30px] p-8 md:p-10 mb-10 text-center border-t-magenta-500">
             <h3 class="text-[10px] font-cyber text-magenta-400 mb-8 tracking-[0.4em] uppercase" data-i18n="donate_title" style="text-shadow: 0 0 10px var(--br-magenta);">ПІДТРИМАТИ РОЗРОБКУ АЛГОРИТМУ</h3>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-black/60 p-6 rounded-2xl border border-teal-500/30 cursor-pointer hover:border-orange-500 hover:shadow-[0_0_15px_rgba(255,140,0,0.3)] transition ui-interact" onclick="copyCrypto('0x748f510de5c5c1f89f160b6e557b464e18f09d91')">
-                    <div class="flex justify-between mb-4"><span class="text-[10px] text-orange-400 font-cyber font-bold uppercase">₿ BTC (BEP20)</span><span>📋</span></div>
-                    <div class="text-[12px] text-gray-300 font-mono break-all text-left">0x748f510de5c5c1f89f160b6e557b464e18f09d91</div>
+                <div class="bg-black/60 p-6 rounded-2xl border border-teal-500/30 cursor-pointer hover-fx ui-interact transition-all" onclick="copyCrypto('1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2', this)">
+                    <div class="flex justify-between mb-4"><span class="text-[10px] text-orange-400 font-cyber font-bold uppercase">₿ BTC (NATIVE)</span><span class="icon-slot">📋</span></div>
+                    <div class="text-[12px] text-gray-500 font-mono break-all text-left">1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2</div>
                 </div>
-                <div class="bg-black/60 p-6 rounded-2xl border border-teal-500/30 cursor-pointer hover:border-yellow-500 hover:shadow-[0_0_15px_rgba(255,215,0,0.3)] transition ui-interact" onclick="copyCrypto('0x748f510de5c5c1f89f160b6e557b464e18f09d91')">
-                    <div class="flex justify-between mb-4"><span class="text-[10px] text-yellow-400 font-cyber font-bold uppercase">💵 USDT (BEP20)</span><span>📋</span></div>
-                    <div class="text-[12px] text-gray-300 font-mono break-all text-left">0x748f510de5c5c1f89f160b6e557b464e18f09d91</div>
+                <div class="bg-black/60 p-6 rounded-2xl border border-teal-500/30 cursor-pointer hover-fx ui-interact transition-all" onclick="copyCrypto('0x748f510de5c5c1f89f160b6e557b464e18f09d91', this)">
+                    <div class="flex justify-between mb-4"><span class="text-[10px] text-yellow-400 font-cyber font-bold uppercase">💵 USDT (BEP20)</span><span class="icon-slot">📋</span></div>
+                    <div class="text-[12px] text-gray-500 font-mono break-all text-left">0x748f510de5c5c1f89f160b6e557b464e18f09d91</div>
                 </div>
-                <div class="bg-black/60 p-6 rounded-2xl border border-teal-500/30 cursor-pointer hover:border-green-500 hover:shadow-[0_0_15px_rgba(57,255,20,0.3)] transition ui-interact" onclick="copyCrypto('TQ36w3mcrETYDqQe7tofrbn4GWtVbcuaUz')">
-                    <div class="flex justify-between mb-4"><span class="text-[10px] text-green-400 font-cyber font-bold uppercase">💵 USDT (TRC20)</span><span>📋</span></div>
-                    <div class="text-[12px] text-gray-300 font-mono break-all text-left">TQ36w3mcrETYDqQe7tofrbn4GWtVbcuaUz</div>
+                <div class="bg-black/60 p-6 rounded-2xl border border-teal-500/30 cursor-pointer hover-fx ui-interact transition-all" onclick="copyCrypto('TQ36w3mcrETYDqQe7tofrbn4GWtVbcuaUz', this)">
+                    <div class="flex justify-between mb-4"><span class="text-[10px] text-green-400 font-cyber font-bold uppercase">💵 USDT (TRC20)</span><span class="icon-slot">📋</span></div>
+                    <div class="text-[12px] text-gray-500 font-mono break-all text-left">TQ36w3mcrETYDqQe7tofrbn4GWtVbcuaUz</div>
                 </div>
             </div>
         </div>
@@ -210,7 +224,6 @@
             "style": "1", "container_id": "tv_chart", "hide_top_toolbar": true, "backgroundColor": "rgba(0,0,0,0)"
         });
 
-        // WEB AUDIO API
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         let soundEnabled = false;
 
@@ -258,7 +271,7 @@
                 copied: "СКОПІЙОВАНО!", 
                 s_BUY: "ГОТУЙСЯ ДО ПОКУПКИ. ІНІЦІАЦІЯ ЛОНГУ 🟢", 
                 s_SELL: "ГОТУЙСЯ ДО ПРОДАЖУ. РИЗИК ДАМПУ 🔴", 
-                s_FLAT: "РИНОК У РІВНОВАЗІ. СКАНУВАННЯ...",
+                s_FLAT: "РИНОК У РІВНОВАЗІ. СТАНУВАННЯ...",
                 btc_label: "РИНКОВА ЦІНА БІТКОЇНА",
                 donate_title: "ПІДТРИМАТИ РОЗРОБКУ АЛГОРИТМА",
                 btn_bot: "КРИПТО БОТ (@TyShoPredictor_bot)",
@@ -276,12 +289,27 @@
             else { music.pause(); btn.innerText = '🔇'; btn.classList.remove('bg-teal-500/20'); }
         }
 
-        function copyCrypto(t) { 
+        // Обновленная функция копирования с визуальным подтверждением на самой кнопке!
+        function copyCrypto(t, element) { 
             navigator.clipboard.writeText(t); 
-            const s = document.getElementById('toast'); 
+            
+            // 1. Всплывающее уведомление снизу (исправлен ID)
+            const s = document.getElementById('copy-toast'); 
             s.innerText = dict[curLang].copied;
             s.classList.add('show'); 
             setTimeout(() => s.classList.remove('show'), 2000); 
+
+            // 2. Интерактивная подсветка самой карточки
+            if (element) {
+                element.classList.add('copied-success');
+                const iconSlot = element.querySelector('.icon-slot');
+                if (iconSlot) iconSlot.innerText = '✅';
+                
+                setTimeout(() => {
+                    element.classList.remove('copied-success');
+                    if (iconSlot) iconSlot.innerText = '📋';
+                }, 1500);
+            }
         }
 
         function setLang(l) { 
@@ -329,7 +357,6 @@
             statusBox.innerText = sMsg;
         }
 
-        // Фонове завантаження альткоїнів (Клієнтське)
         async function fetchAltcoins() {
             try {
                 const res = await fetch('https://api.binance.com/api/v3/ticker/price?symbols=%5B%22ETHUSDT%22,%22BNBUSDT%22,%22SOLUSDT%22,%22XRPUSDT%22,%22DOGEUSDT%22%5D');
