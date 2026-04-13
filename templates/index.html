@@ -8,6 +8,14 @@
     <meta name="description" content="PANDA SENTINEL - Професійний крипто-термінал та алгоритм аналізу ліквідності. Сигнали для Bitcoin.">
     <meta name="keywords" content="криптовалюта, трейдинг, біткоїн, сигналы, bitcoin, crypto, trading, orcas, panda sentinel">
     
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-J0XQZ9D6K5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-J0XQZ9D6K5');
+    </script>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐼</text></svg>">
     <title>PANDA_SENTINEL | Quantum</title>
     
@@ -42,6 +50,11 @@
             box-shadow: 0 10px 40px rgba(0,0,0,0.8); 
         }
 
+        /* АНИМАЦИЯ И ВЗАИМОДЕЙСТВИЕ КАРТОЧЕК */
+        .ui-interact { transition: all 0.2s ease; }
+        .ui-interact:active { transform: scale(0.96) !important; }
+        .hover-fx:hover { border-color: var(--br-orange); transform: translateY(-3px); box-shadow: 0 20px 50px rgba(255, 140, 0, 0.2); }
+
         .lang-btn {
             background: rgba(0,0,0,0.5); border: 1px solid rgba(4, 217, 255, 0.3);
             color: #aaa; padding: 4px 12px; border-radius: 4px; font-family: 'Orbitron', sans-serif;
@@ -75,29 +88,14 @@
             box-shadow: 0 0 15px rgba(4, 217, 255, 0.2); transition: all 0.3s ease; position: relative; overflow: hidden;
         }
         .tg-btn:hover { background: linear-gradient(45deg, var(--br-teal), #000); color: #fff; box-shadow: 0 0 30px rgba(4, 217, 255, 0.6); transform: scale(1.02); }
-    </style>
-    <!DOCTYPE html>
-<html lang="uk">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <meta name="google-site-verification" content="_KwUSSjTUf9_a7zKBkQk0zJrEm_IGE9HJupji9CiMOw" />
-    <meta name="description" content="PANDA SENTINEL - Професійний крипто-термінал та алгоритм аналізу ліквідності. Сигнали для Bitcoin.">
-    <meta name="keywords" content="криптовалюта, трейдинг, біткоїн, сигналы, bitcoin, crypto, trading, orcas, panda sentinel">
-    
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-J0XQZ9D6K5"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
 
-      gtag('config', 'G-J0XQZ9D6K5');
-    </script>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐼</text></svg>">
-    <title>PANDA_SENTINEL | Quantum</title>
-    
-    <script src="https://cdn.tailwindcss.com"></script>
+        /* Успешное копирование */
+        .copied-success {
+            border-color: var(--br-green) !important;
+            box-shadow: 0 0 20px rgba(57, 255, 20, 0.5) !important;
+            background: rgba(57, 255, 20, 0.1) !important;
+        }
+    </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-6" id="app-body">
 
@@ -116,16 +114,16 @@
         </p>
         
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-4xl px-4 mb-10">
-            <div class="bg-black/60 p-5 rounded-2xl border border-teal-500/30 cursor-pointer hover:border-orange-500 transition shadow-lg ui-interact" onclick="copyCrypto('0x748f510de5c5c1f89f160b6e557b464e18f09d91')">
-                <div class="flex justify-between mb-2"><span class="text-[11px] text-orange-400 font-cyber font-bold uppercase">₿ BTC (BEP20)</span><span>📋</span></div>
+            <div class="bg-black/60 p-5 rounded-2xl border border-teal-500/30 cursor-pointer hover:border-orange-500 transition shadow-lg ui-interact" onclick="copyCrypto('0x748f510de5c5c1f89f160b6e557b464e18f09d91', this)">
+                <div class="flex justify-between mb-2"><span class="text-[11px] text-orange-400 font-cyber font-bold uppercase">₿ BTC (BEP20)</span><span class="icon-slot">📋</span></div>
                 <div class="text-[12px] text-gray-300 font-mono break-all text-left">0x748f510de5c5c1f89f160b6e557b464e18f09d91</div>
             </div>
-            <div class="bg-black/60 p-5 rounded-2xl border border-teal-500/30 cursor-pointer hover:border-yellow-500 transition shadow-lg ui-interact" onclick="copyCrypto('0x748f510de5c5c1f89f160b6e557b464e18f09d91')">
-                <div class="flex justify-between mb-2"><span class="text-[11px] text-yellow-400 font-cyber font-bold uppercase">💵 USDT (BEP20)</span><span>📋</span></div>
+            <div class="bg-black/60 p-5 rounded-2xl border border-teal-500/30 cursor-pointer hover:border-yellow-500 transition shadow-lg ui-interact" onclick="copyCrypto('0x748f510de5c5c1f89f160b6e557b464e18f09d91', this)">
+                <div class="flex justify-between mb-2"><span class="text-[11px] text-yellow-400 font-cyber font-bold uppercase">💵 USDT (BEP20)</span><span class="icon-slot">📋</span></div>
                 <div class="text-[12px] text-gray-300 font-mono break-all text-left">0x748f510de5c5c1f89f160b6e557b464e18f09d91</div>
             </div>
-            <div class="bg-black/60 p-5 rounded-2xl border border-teal-500/30 cursor-pointer hover:border-green-500 transition shadow-lg ui-interact" onclick="copyCrypto('TQ36w3mcrETYDqQe7tofrbn4GWtVbcuaUz')">
-                <div class="flex justify-between mb-2"><span class="text-[11px] text-green-400 font-cyber font-bold uppercase">💵 USDT (TRC20)</span><span>📋</span></div>
+            <div class="bg-black/60 p-5 rounded-2xl border border-teal-500/30 cursor-pointer hover:border-green-500 transition shadow-lg ui-interact" onclick="copyCrypto('TQ36w3mcrETYDqQe7tofrbn4GWtVbcuaUz', this)">
+                <div class="flex justify-between mb-2"><span class="text-[11px] text-green-400 font-cyber font-bold uppercase">💵 USDT (TRC20)</span><span class="icon-slot">📋</span></div>
                 <div class="text-[12px] text-gray-300 font-mono break-all text-left">TQ36w3mcrETYDqQe7tofrbn4GWtVbcuaUz</div>
             </div>
         </div>
@@ -225,16 +223,16 @@
         <div class="w-full cyber-card rounded-[30px] p-8 md:p-10 mb-10 text-center border-t-magenta-500">
             <h3 class="text-[10px] font-cyber text-magenta-400 mb-8 tracking-[0.4em] uppercase" data-i18n="donate_title" style="text-shadow: 0 0 10px var(--br-magenta);">ПІДТРИМАТИ РОЗРОБКУ АЛГОРИТМУ</h3>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-black/60 p-6 rounded-2xl border border-teal-500/30 cursor-pointer hover-fx ui-interact" onclick="copyCrypto('0x748f510de5c5c1f89f160b6e557b464e18f09d91')">
-                    <div class="flex justify-between mb-4"><span class="text-[10px] text-orange-400 font-cyber font-bold uppercase">₿ BTC (BEP20)</span><span>📋</span></div>
+                <div class="bg-black/60 p-6 rounded-2xl border border-teal-500/30 cursor-pointer hover-fx ui-interact transition-all" onclick="copyCrypto('0x748f510de5c5c1f89f160b6e557b464e18f09d91', this)">
+                    <div class="flex justify-between mb-4"><span class="text-[10px] text-orange-400 font-cyber font-bold uppercase">₿ BTC (BEP20)</span><span class="icon-slot">📋</span></div>
                     <div class="text-[12px] text-gray-500 font-mono break-all text-left">0x748f510de5c5c1f89f160b6e557b464e18f09d91</div>
                 </div>
-                <div class="bg-black/60 p-6 rounded-2xl border border-teal-500/30 cursor-pointer hover-fx ui-interact" onclick="copyCrypto('0x748f510de5c5c1f89f160b6e557b464e18f09d91')">
-                    <div class="flex justify-between mb-4"><span class="text-[10px] text-yellow-400 font-cyber font-bold uppercase">💵 USDT (BEP20)</span><span>📋</span></div>
+                <div class="bg-black/60 p-6 rounded-2xl border border-teal-500/30 cursor-pointer hover-fx ui-interact transition-all" onclick="copyCrypto('0x748f510de5c5c1f89f160b6e557b464e18f09d91', this)">
+                    <div class="flex justify-between mb-4"><span class="text-[10px] text-yellow-400 font-cyber font-bold uppercase">💵 USDT (BEP20)</span><span class="icon-slot">📋</span></div>
                     <div class="text-[12px] text-gray-500 font-mono break-all text-left">0x748f510de5c5c1f89f160b6e557b464e18f09d91</div>
                 </div>
-                <div class="bg-black/60 p-6 rounded-2xl border border-teal-500/30 cursor-pointer hover-fx ui-interact" onclick="copyCrypto('TQ36w3mcrETYDqQe7tofrbn4GWtVbcuaUz')">
-                    <div class="flex justify-between mb-4"><span class="text-[10px] text-green-400 font-cyber font-bold uppercase">💵 USDT (TRC20)</span><span>📋</span></div>
+                <div class="bg-black/60 p-6 rounded-2xl border border-teal-500/30 cursor-pointer hover-fx ui-interact transition-all" onclick="copyCrypto('TQ36w3mcrETYDqQe7tofrbn4GWtVbcuaUz', this)">
+                    <div class="flex justify-between mb-4"><span class="text-[10px] text-green-400 font-cyber font-bold uppercase">💵 USDT (TRC20)</span><span class="icon-slot">📋</span></div>
                     <div class="text-[12px] text-gray-500 font-mono break-all text-left">TQ36w3mcrETYDqQe7tofrbn4GWtVbcuaUz</div>
                 </div>
             </div>
@@ -247,7 +245,6 @@
             "style": "1", "container_id": "tv_chart", "hide_top_toolbar": true, "backgroundColor": "rgba(0,0,0,0)"
         });
 
-        // WEB AUDIO API
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         let soundEnabled = false;
 
@@ -313,12 +310,25 @@
             else { music.pause(); btn.innerText = '🔇'; btn.classList.remove('bg-teal-500/20'); }
         }
 
-        function copyCrypto(t) { 
+        // Обновленная функция копирования с визуальным подтверждением на самой кнопке
+        function copyCrypto(t, element) { 
             navigator.clipboard.writeText(t); 
-            const s = document.getElementById('toast'); 
+            
+            const s = document.getElementById('copy-toast'); 
             s.innerText = dict[curLang].copied;
             s.classList.add('show'); 
             setTimeout(() => s.classList.remove('show'), 2000); 
+
+            if (element) {
+                element.classList.add('copied-success');
+                const iconSlot = element.querySelector('.icon-slot');
+                if (iconSlot) iconSlot.innerText = '✅';
+                
+                setTimeout(() => {
+                    element.classList.remove('copied-success');
+                    if (iconSlot) iconSlot.innerText = '📋';
+                }, 1500);
+            }
         }
 
         function setLang(l) { 
