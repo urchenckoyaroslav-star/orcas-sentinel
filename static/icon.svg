@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+    <rect width="512" height="512" rx="110" fill="#05070a"/>
+    <rect width="492" height="492" x="10" y="10" rx="100" fill="none" stroke="#04d9ff" stroke-width="15" opacity="0.8"/>
+    <rect width="472" height="472" x="20" y="20" rx="90" fill="none" stroke="#b800ff" stroke-width="5" opacity="0.4"/>
+    <text x="50%" y="55%" font-size="280" text-anchor="middle" dominant-baseline="middle">🐼</text>
+</svg>
